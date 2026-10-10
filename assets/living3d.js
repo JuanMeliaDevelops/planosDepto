@@ -178,6 +178,51 @@ function chair(cx, cz, faceX, faceZ, g, color = C.wood){
   g.add(c);
 }
 
+// Setup de escritorio: monitor principal horizontal (27") + monitor vertical (24"), centrados como conjunto
+// sobre el escritorio. El vertical va a la derecha, girado 25° hacia el usuario.
+// Devuelve la coordenada z del centro del monitor principal, para alinear silla y teclado.
+function monitorSetup(d, g){
+  const MAIN_W = 0.61, MAIN_H = 0.36;      // 27" 16:9
+  const PORT_W = 0.30, PORT_H = 0.53;      // 24" en vertical
+  const GAP = 0.02, ANG = THREE.MathUtils.degToRad(25);
+  const T = 0.025, Y0 = 0.90;              // espesor del panel y altura del borde inferior del principal
+  const xFace = d.x + 0.17;                // plano del principal (≈ 70 cm de los ojos)
+  const mz = d.z + d.d / 2;
+  const total = MAIN_W + GAP + PORT_W * Math.cos(ANG);
+  const zMin = mz - total / 2;
+  const mainZ0 = zMin + PORT_W * Math.cos(ANG) + GAP;
+  const mainC = mainZ0 + MAIN_W / 2;
+  const screenMat = new THREE.MeshStandardMaterial({color:0x1d2a38, roughness:0.25, emissive:0x101a24, emissiveIntensity:0.6});
+  const bezel = mat(C.black, {roughness:0.35});
+
+  // principal
+  g.add(box(xFace - T, Y0, mainZ0, xFace, Y0 + MAIN_H, mainZ0 + MAIN_W, bezel));
+  g.add(box(xFace, Y0 + 0.012, mainZ0 + 0.012, xFace + 0.002, Y0 + MAIN_H - 0.012, mainZ0 + MAIN_W - 0.012, screenMat));
+
+  // vertical: pivota en el borde que toca al principal y gira hacia el usuario
+  const piv = new THREE.Group();
+  piv.position.set(xFace, 0, mainZ0 - GAP);
+  piv.rotation.y = -ANG;
+  const py0 = Y0 + MAIN_H / 2 - PORT_H / 2;  // centrado en altura con el principal
+  piv.add(box(-T, py0, -PORT_W, 0, py0 + PORT_H, 0, bezel));
+  piv.add(box(0, py0 + 0.012, -PORT_W + 0.012, 0.002, py0 + PORT_H - 0.012, -0.012, screenMat));
+  g.add(piv);
+
+  // brazo doble: columna centrada detrás del conjunto + dos brazos
+  const poleZ = zMin + total / 2;
+  g.add(cyl(d.x + 0.07, poleZ, 0.02, 0.75, Y0 + MAIN_H / 2 + 0.05, C.metal, 20));
+  g.add(box(d.x + 0.05, 0.75, poleZ - 0.06, d.x + 0.13, 0.77, poleZ + 0.06, C.metal));
+  const armY = Y0 + MAIN_H / 2 - 0.015;
+  g.add(box(d.x + 0.07, armY, Math.min(poleZ, mainC) - 0.015, xFace - T - 0.005, armY + 0.03, Math.max(poleZ, mainC) + 0.015, C.metal));
+  const portC = mainZ0 - GAP - (PORT_W / 2) * Math.cos(ANG);
+  g.add(box(d.x + 0.07, armY, Math.min(poleZ, portC) - 0.015, xFace - T - 0.01, armY + 0.03, Math.max(poleZ, portC) + 0.015, C.metal));
+
+  // teclado y mouse frente al principal
+  g.add(box(d.x + 0.33, 0.75, mainC - 0.22, d.x + 0.46, 0.77, mainC + 0.22, 0x4a4e52));
+  g.add(box(d.x + 0.36, 0.75, mainC + 0.28, d.x + 0.43, 0.785, mainC + 0.34, 0x4a4e52));
+  return mainC;
+}
+
 function disposeGroup(g){
   g.traverse(o => {
     if(o.isCSS2DObject) o.element.remove();
@@ -232,12 +277,9 @@ function buildFurniture(key){
   furn.add(box(d.x+0.02,0,d.z+0.02,d.x+d.w-0.02,0.72,d.z+0.06,C.black));
   furn.add(box(d.x+0.02,0,d.z+d.d-0.06,d.x+d.w-0.02,0.72,d.z+d.d-0.02,C.black));
   const mz = d.z+d.d/2;
-  furn.add(box(d.x+0.08,0.75,mz-0.04,d.x+0.12,1.05,mz+0.04,C.metal));
-  furn.add(box(d.x+0.12,0.95,mz-0.62,d.x+0.15,1.3,mz-0.02,C.black,{roughness:0.3}));
-  furn.add(box(d.x+0.12,0.95,mz+0.02,d.x+0.15,1.3,mz+0.62,C.black,{roughness:0.3}));
-  furn.add(box(d.x+0.32,0.75,mz-0.22,d.x+0.45,0.77,mz+0.22,0x4a4e52));
+  const mainC = monitorSetup(d, furn);
   furn.add(box(d.x+0.2,0,d.z+d.d-0.28,d.x+0.42,0.45,d.z+d.d-0.07,C.printer));
-  chair(L.deskChair[0], L.deskChair[1], 0, L.deskChair[1], furn, C.black);
+  chair(L.deskChair[0], mainC, 0, mainC, furn, C.black);
   tag("Escritorio", "120 × 60", d.x+d.w/2, 1.45, mz, furn);
 
   const p = L.printer, pc = p.z+p.d/2;
@@ -380,4 +422,4 @@ renderer.setAnimationLoop(now => {
 for(const b of document.querySelectorAll("button")) b.addEventListener("click", () => { needs = true; });
 new ResizeObserver(() => { needs = true; }).observe(stage);
 darkMQ.addEventListener?.("change", () => { needs = true; });
-window.__living = { goView, buildFurniture, render: () => { needs = true; } };
+window.__living = { goView, buildFurniture, render: () => { needs = true; }, look: (p, t) => { camera.position.set(...p); controls.target.set(...t); controls.update(); needs = true; } };
