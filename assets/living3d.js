@@ -221,6 +221,43 @@ sheetHead.addEventListener("pointercancel", () => { drag = null; });
 new ResizeObserver(announceSheet).observe(dist);
 mobileMQ.addEventListener?.("change", () => setSheet("peek"));
 
+// ---------- visor de renders ----------
+const RENDERS = [
+  {src:"renders/render-1.jpg", title:"Sillón recto", alt:"Render del depto con sillón recto verde, mesa redonda y sillas amarillas"},
+  {src:"renders/render-2.jpg", title:"Sillón con chaise", alt:"Render del depto con sillón gris con chaise, mesa auxiliar y sillas tapizadas"},
+];
+const lb = document.getElementById("lightbox"), lbImg = document.getElementById("lb-img");
+let lbIndex = 0, lbOpener = null;
+function lbShow(i){
+  lbIndex = (i + RENDERS.length) % RENDERS.length;
+  const r = RENDERS[lbIndex];
+  lbImg.src = r.src; lbImg.alt = r.alt;
+  document.getElementById("lb-title").textContent = r.title;
+  document.getElementById("lb-count").textContent = `${lbIndex + 1} / ${RENDERS.length}`;
+  document.getElementById("lb-full").href = r.src;
+}
+function lbOpen(i, opener){ lbOpener = opener; lbShow(i); lb.hidden = false; document.getElementById("lb-close").focus(); }
+function lbClose(){ lb.hidden = true; lbOpener?.focus(); }
+document.querySelectorAll(".render-thumb").forEach(b => b.addEventListener("click", () => lbOpen(+b.dataset.i, b)));
+document.getElementById("lb-close").addEventListener("click", lbClose);
+document.getElementById("lb-prev").addEventListener("click", () => lbShow(lbIndex - 1));
+document.getElementById("lb-next").addEventListener("click", () => lbShow(lbIndex + 1));
+lb.addEventListener("click", e => { if(e.target === lb || e.target.id === "lb-stage") lbClose(); });
+addEventListener("keydown", e => {
+  if(lb.hidden) return;
+  if(e.key === "Escape") lbClose();
+  if(e.key === "ArrowLeft") lbShow(lbIndex - 1);
+  if(e.key === "ArrowRight") lbShow(lbIndex + 1);
+});
+// deslizar con el dedo para pasar de render
+let sx = null;
+lb.addEventListener("touchstart", e => { sx = e.touches.length === 1 ? e.touches[0].clientX : null; }, {passive:true});
+lb.addEventListener("touchend", e => {
+  if(sx === null) return;
+  const dx = e.changedTouches[0].clientX - sx; sx = null;
+  if(Math.abs(dx) > 50) lbShow(lbIndex + (dx < 0 ? 1 : -1));
+}, {passive:true});
+
 // ---------- selección de distribución (funciona aunque no haya 3D) ----------
 let onLayout = () => {};
 function pressGroup(sel, btn){ document.querySelectorAll(sel).forEach(b => b.setAttribute("aria-pressed", String(b === btn))); }

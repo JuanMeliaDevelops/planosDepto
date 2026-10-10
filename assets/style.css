@@ -279,3 +279,34 @@ details.more .more-body{display:flex;flex-direction:column;gap:10px;padding-top:
   .hint{left:calc(50% + 100px)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* ---------- renders ---------- */
+.pill.icon-only{padding:0 12px}
+.renders{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.render-thumb{display:flex;flex-direction:column;gap:5px;padding:0;border:0;background:none;color:var(--fg);font:inherit;cursor:pointer;text-align:left;min-width:0}
+.render-thumb img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:#111;transition:transform .2s}
+.render-thumb:hover img{transform:scale(1.02)}
+.render-thumb span{font-size:12.5px;font-weight:600}
+.small-note{font-size:12px!important;color:var(--muted);margin:0}
+.sep{border:0;border-top:1px solid var(--line);margin:2px 0;width:100%}
+.files{max-height:calc(100dvh - 90px);overflow-y:auto}
+
+.lightbox{position:fixed;inset:0;z-index:50;background:#0b0d0c;display:flex;flex-direction:column;color:#fff}
+.lb-top{display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px 16px}
+.lb-top strong{flex:1;font-size:15px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-count{font-size:13px;color:#b9c2bd}
+.lb-btn{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:26px;line-height:1;cursor:pointer;flex:0 0 auto}
+.lb-btn:hover{background:rgba(255,255,255,.22)}
+.lb-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 8px;touch-action:pan-y pinch-zoom}
+.lb-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;user-select:none;-webkit-user-drag:none}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);font-size:32px}
+.lb-prev{left:12px} .lb-next{right:12px}
+.lb-bottom{padding:10px 16px calc(14px + env(safe-area-inset-bottom,0px));text-align:center}
+.lb-bottom a{color:#cfe7dc;font-size:14px}
+@media (max-width:640px){ .lb-nav{top:auto;bottom:calc(52px + env(safe-area-inset-bottom,0px));transform:none} }
+@media (max-width:959px){ .pill.icon-only .pill-text{display:none} .pill.icon-only{width:36px;padding:0;justify-content:center} }
+.render-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.render-fig{margin:0;display:flex;flex-direction:column;gap:6px}
+.render-fig img{width:100%;border-radius:var(--radius);border:1px solid var(--line);background:#111}
+.render-fig figcaption{font-size:14px;font-weight:600}
+@media (min-width:640px){.render-grid{grid-template-columns:1fr 1fr}}
