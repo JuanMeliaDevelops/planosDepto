@@ -10,7 +10,7 @@ const labelsEl = document.getElementById("labels");
 // ---------- datos de cada distribución (para la tarjeta) ----------
 const OPTIONS = {
   A: {
-    title: "Opción A", badge: "Tus muebles",
+    title: "Tus muebles", badge: "Opción 1",
     desc: "Con tus muebles: sillón con chaise del lado del ventanal, ratona al costado, mesa Oliva ovalada con 2 sillas junto a la cocina y la oficina con la impresora junto al ventanal.",
     metrics: [
       ["Paso frente al sillón", "1,26 m"],
@@ -26,16 +26,16 @@ const OPTIONS = {
     ],
   },
   A2: {
-    title: "Opción A ajustada", badge: "Más amplia",
-    desc: "La misma distribución, pero cambiando el sillón por uno de 100 de profundidad sin chaise y la mesa por una redonda. El living gana paso y se siente más amplio.",
+    title: "Más amplia", badge: "Opción 2",
+    desc: "La misma distribución que la opción 1, pero cambiando el sillón por uno de 100 de profundidad sin chaise y la mesa por una redonda. El living gana paso y se siente más amplio.",
     metrics: [
       ["Paso frente al sillón", "1,50 m", "+24 cm", "up"],
       ["Paso al balcón", "1,20 m"],
       ["Ratona a silla comedor", "0,20 m"],
-      ["Piso libre", "+0,7 m²", "vs. A", "up"],
+      ["Piso libre", "+0,7 m²", "vs. opción 1", "up"],
     ],
     note: ["good", "Las etiquetas naranjas del 3D marcan los muebles que cambian."],
-    listTitle: "Qué cambia respecto de la A",
+    listTitle: "Qué cambia respecto de la opción 1",
     list: [
       ["Sillón Nube", "200 × 120 + chaise", "200 × 100"],
       ["Mesa comedor", "120 × 80 oval", "Ø 100"],
@@ -47,7 +47,7 @@ const OPTIONS = {
     ],
   },
   B: {
-    title: "Opción B", badge: "Living al ventanal",
+    title: "Living al ventanal", badge: "Opción 3",
     desc: "El living pasa al ventanal, con la mejor luz y vista al balcón. El escritorio queda en el medio, contra el tabique del dormitorio, y la impresora enfrente.",
     metrics: [
       ["Paso central", "1,20 m"],
@@ -258,6 +258,37 @@ lb.addEventListener("touchend", e => {
   if(Math.abs(dx) > 50) lbShow(lbIndex + (dx < 0 ? 1 : -1));
 }, {passive:true});
 
+// ---------- mini plano de cada opción (vista desde arriba, ventanal a la derecha) ----------
+function planSVG(key){
+  const L = LAYOUTS[key];
+  const R = (x0,z0,x1,z1,cls) => `<rect x="${Math.min(z0,z1)}" y="${Math.min(x0,x1)}" width="${Math.abs(z1-z0)}" height="${Math.abs(x1-x0)}" rx="0.04" class="${cls}"/>`;
+  let g = "";
+  const s = L.sofa;
+  g += R(s.x, s.z, s.x+s.d, s.z+s.l, "pf main");
+  if(s.chaise) g += R(s.x+s.d-0.05, s.z+s.l-s.chaise.w, s.chaise.d, s.z+s.l, "pf main");
+  const m = L.mesa;
+  if(m.type === "round") g += `<circle cx="${m.z}" cy="${m.x}" r="${m.r}" class="pf"/>`;
+  else g += `<ellipse cx="${m.z+m.d/2}" cy="${m.x+m.w/2}" rx="${m.d/2}" ry="${m.w/2}" class="pf"/>`;
+  const t = L.ratona;
+  g += t.type === "round" ? `<circle cx="${t.z}" cy="${t.x}" r="${t.r}" class="pf soft"/>` : R(t.x, t.z, t.x+t.w, t.z+t.d, "pf soft");
+  const r = L.rack; g += R(2.8-r.d, r.z, 2.8, r.z+r.l, "pf soft");
+  const d = L.desk;
+  g += d.rot ? R(d.pos[0]-0.6, d.pos[1]-1.2, d.pos[0], d.pos[1], "pf desk") : R(d.pos[0], d.pos[1], d.pos[0]+0.6, d.pos[1]+1.2, "pf desk");
+  const p = L.printer; g += R(p.x, p.z, p.x+p.w, p.z+p.d, "pf soft");
+  return `<svg viewBox="-0.12 -0.12 6.24 3.04" role="presentation">
+    <rect x="0" y="0" width="6" height="2.8" class="room"/>
+    <line x1="6" y1="0.1" x2="6" y2="2.7" class="win"/>
+    ${g}</svg>`;
+}
+document.querySelectorAll(".opt-plan").forEach(el => { el.innerHTML = planSVG(el.dataset.plan); });
+
+const toastEl = document.getElementById("toast");
+let toastT;
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove("show"), 1700);
+}
+
 // ---------- selección de distribución (funciona aunque no haya 3D) ----------
 let onLayout = () => {};
 function pressGroup(sel, btn){ document.querySelectorAll(sel).forEach(b => b.setAttribute("aria-pressed", String(b === btn))); }
@@ -269,6 +300,7 @@ document.querySelectorAll("[data-l]").forEach(b => {
     try{ localStorage.setItem("living-layout", b.dataset.l); }catch(e){}
     try{ history.replaceState(null, "", "#" + b.dataset.l); }catch(e){}
     onLayout(b.dataset.l);
+    toast(`Mostrando: ${OPTIONS[b.dataset.l].title}`);
   });
 });
 let start = "A";

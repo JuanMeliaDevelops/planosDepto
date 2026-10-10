@@ -20,13 +20,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=8">
+<link rel="stylesheet" href="assets/style.css?v=9">
 <link rel="modulepreload" href="vendor/three/three.module.min.js">
 </head>
 <body class="viewer">
 
   <div class="v-stage" id="stage">
     <div class="v-labels" id="labels"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <div class="hint" id="hint">Arrastrá para girar · pellizcá para acercar</div>
   </div>
 
@@ -103,7 +104,7 @@
     <div class="sheet-head" id="sheet-head">
       <span class="grab" aria-hidden="true"></span>
       <div class="sheet-bar">
-        <div class="sheet-title"><span class="dot" id="sheet-dot"></span><strong id="sheet-name">Opción A</strong></div>
+        <div class="sheet-title"><span class="dot" id="sheet-dot"></span><span class="sheet-name-wrap"><span class="sheet-kicker">Viendo</span><strong id="sheet-name">Tus muebles</strong></span></div>
         <button class="icon-btn" id="sheet-toggle" aria-expanded="false" aria-controls="detail">Ver detalles</button>
         <button class="icon-btn round" id="sheet-hide" aria-label="Ocultar controles" title="Ocultar controles">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
@@ -112,25 +113,41 @@
     </div>
     <div class="dist-head">
       <p class="card-label">Elegí una distribución</p>
-      <p>El modelo 3D cambia al tocar cada opción.</p>
+      <p>Tocá una tarjeta y el 3D se acomoda con esa opción.</p>
     </div>
 
     <div class="opts" role="group" aria-label="Distribuciones">
-      <button class="opt" data-l="A" aria-pressed="true"><span class="t"><span class="dot"></span>A</span><span class="s">Tus muebles</span></button>
-      <button class="opt" data-l="A2" aria-pressed="false"><span class="t"><span class="dot"></span>A ajustada</span><span class="s">Más amplia</span></button>
-      <button class="opt" data-l="B" aria-pressed="false"><span class="t"><span class="dot"></span>B</span><span class="s">Living al ventanal</span></button>
+      <button class="opt" data-l="A" aria-pressed="true">
+        <span class="opt-plan" data-plan="A" aria-hidden="true"></span>
+        <span class="opt-text"><span class="t"><span class="opt-num">1</span>Tus muebles</span><span class="s">Living al centro, con chaise</span></span>
+        <span class="opt-check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="opt" data-l="A2" aria-pressed="false">
+        <span class="opt-plan" data-plan="A2" aria-hidden="true"></span>
+        <span class="opt-text"><span class="t"><span class="opt-num">2</span>Más amplia</span><span class="s">Sin chaise, mesa redonda</span></span>
+        <span class="opt-check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="opt" data-l="B" aria-pressed="false">
+        <span class="opt-plan" data-plan="B" aria-hidden="true"></span>
+        <span class="opt-text"><span class="t"><span class="opt-num">3</span>Living al ventanal</span><span class="s">Escritorio en el medio</span></span>
+        <span class="opt-check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
     </div>
 
     <div class="detail" id="detail" data-l="A" aria-live="polite"></div>
 
-    <div class="views" role="group" aria-label="Punto de vista">
-      <button class="chip" data-v="iso" aria-pressed="true">General</button>
-      <button class="chip" data-v="entrada" aria-pressed="false">Desde la entrada</button>
-      <button class="chip" data-v="balcon" aria-pressed="false">Desde el balcón</button>
-      <button class="chip" data-v="cocina" aria-pressed="false">Desde la cocina</button>
-      <button class="chip" data-v="escritorio" aria-pressed="false">Escritorio</button>
-      <button class="chip" data-v="plan" aria-pressed="false">Planta</button>
-      <button class="chip" id="t-walls" aria-pressed="false">Muros bajos</button>
+    <div class="views-wrap">
+      <p class="mini-label">Mirar desde</p>
+      <div class="views" role="group" aria-label="Punto de vista">
+        <button class="chip" data-v="iso" aria-pressed="true">Arriba</button>
+        <button class="chip" data-v="entrada" aria-pressed="false">La entrada</button>
+        <button class="chip" data-v="balcon" aria-pressed="false">El balcón</button>
+        <button class="chip" data-v="cocina" aria-pressed="false">La cocina</button>
+        <button class="chip" data-v="escritorio" aria-pressed="false">El escritorio</button>
+        <button class="chip" data-v="plan" aria-pressed="false">Planta 2D</button>
+        <span class="chip-sep" aria-hidden="true"></span>
+        <button class="chip toggle" id="t-walls" aria-pressed="false"><span class="sw" aria-hidden="true"></span>Muros bajos</button>
+      </div>
     </div>
   </section>
 
@@ -140,7 +157,7 @@
   "three/addons/":"./vendor/three/addons/"
 }}
 </script>
-<script type="module" src="assets/living3d.js?v=8"></script>
+<script type="module" src="assets/living3d.js?v=9"></script>
 <noscript><p class="fallback">Este modelo necesita JavaScript. <a href="planos.html">Ver los planos</a></p></noscript>
 </body>
 </html>
