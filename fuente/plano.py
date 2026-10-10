@@ -6,7 +6,7 @@ import math
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle, Arc, Circle
+from matplotlib.patches import Rectangle, Arc, Circle, Ellipse
 import ezdxf
 
 ESCALA = 50          # 1:50
@@ -52,9 +52,9 @@ LAYOUTS = {
     "A": {
         "titulo": "OPCIÓN A — Comedor junto a la cocina · Living al centro · Oficina junto al ventanal",
         "muebles": [
-            ("Mesa Oliva", 1.00, 0.90, 0.80, 1.20, "120 × 80"),
+            ("Mesa Oliva", 1.00, 0.90, 0.80, 1.20, "120 × 80 oval"),
             ("Sillón Nube", 0.00, 2.50, 1.20, 2.00, "200 × 120"),
-            ("Ratona", 1.50, 3.15, 0.45, 0.70, "45 × 70"),
+            ("Ratona", 0.05, 2.04, 0.70, 0.45, "45 × 70"),
             ("Rack TV", 2.46, 2.70, 0.34, 1.60, "160 × 34"),
             ("Escritorio", 0.00, 4.80, 0.60, 1.20, "120 × 60"),
             ("Mueble impresora 3D", 2.40, 4.60, 0.40, 1.30, "130 × 40"),
@@ -64,12 +64,12 @@ LAYOUTS = {
         "notas": [
             "• Paso cocina ↔ pasillo: 0,90 m frente a la mesada",
             "• Paso al balcón: ~1,10 m entre silla de escritorio y mueble impresora",
-            "• Sillón–TV: ~1,26 m (cómodo para 2,80 de ancho)",
+            "• Paso libre frente al sillón: ~1,26 m (ratona al costado)",
             "• Escritorio con luz lateral del ventanal (sin reflejos en monitores)",
         ],
     },
     "A2": {
-        "titulo": "OPCIÓN A AJUSTADA — Sillón 100 prof. · Mesa redonda Ø100 · Rack flotante · Ratona Ø55",
+        "titulo": "OPCIÓN A AJUSTADA — Sillón 100 prof. · Mesa redonda Ø100 · Rack flotante · Ratona Ø55 al costado",
         "muebles": [
             ("Sillón Nube", 0.00, 2.60, 1.00, 2.00, "200 × 100"),
             ("Rack flotante", 2.50, 2.80, 0.30, 1.60, "160 × 30"),
@@ -78,13 +78,12 @@ LAYOUTS = {
         ],
         "redondos": [
             ("Mesa redonda", 1.40, 1.65, 1.00, "Ø100"),
-            ("Ratona", 1.55, 3.60, 0.55, "Ø55"),
+            ("Ratona", 0.35, 2.30, 0.55, "Ø55"),
         ],
         "sillas": [(1.40, 1.03), (1.40, 2.27), (0.78, 1.65), (2.02, 1.65), (0.95, 5.40)],
         "tv": (2.80, 3.60, "v"),
         "notas": [
-            "• Paso ratona–rack: ~0,68 m (antes ~0,50 m)",
-            "• Sillón–TV: ~1,50 m",
+            "• Paso libre frente al sillón: ~1,50 m (ratona al costado)",
             "• Paso al balcón: ~1,20 m entre silla de escritorio y módulo",
             "• ~1 m² más de piso libre que la opción A original",
             "• Rack colgado a 30–40 cm del piso: se ve el piso debajo",
@@ -93,11 +92,11 @@ LAYOUTS = {
     "B": {
         "titulo": "OPCIÓN B — Living al ventanal · Escritorio en el medio · Comedor junto a la cocina",
         "muebles": [
-            ("Mesa Oliva", 1.00, 0.90, 0.80, 1.20, "120 × 80"),
+            ("Mesa Oliva", 1.00, 0.90, 0.80, 1.20, "120 × 80 oval"),
             ("Escritorio", 2.20, 2.30, 0.60, 1.20, "120 × 60"),
-            ("Mueble impresora 3D", 0.00, 2.40, 0.40, 1.30, "130 × 40"),
+            ("Mueble impresora 3D", 0.00, 2.10, 0.40, 1.30, "130 × 40"),
             ("Sillón Nube", 0.00, 3.90, 1.20, 2.00, "200 × 120"),
-            ("Ratona", 1.50, 4.55, 0.45, 0.70, "45 × 70"),
+            ("Ratona", 0.05, 3.43, 0.70, 0.45, "45 × 70"),
             ("Rack TV", 2.46, 4.10, 0.34, 1.60, "160 × 34"),
         ],
         "sillas": [(0.72, 1.20), (0.72, 1.80), (2.08, 1.20), (2.08, 1.80), (1.88, 2.90)],
@@ -105,7 +104,7 @@ LAYOUTS = {
         "notas": [
             "• Paso central entre impresora y silla de escritorio: ~1,20 m",
             "• Living con la mejor luz y vista al balcón",
-            "• Paso al balcón por delante de la ratona: ~0,75 m",
+            "• Paso al balcón frente al sillón: ~1,26 m",
             "• Escritorio contra el tabique: el cableado queda junto al rack",
         ],
     },
@@ -146,7 +145,10 @@ def draw_layout(ax, key):
 
     # muebles
     for n, x, y, w, d, med in L["muebles"]:
-        ax.add_patch(Rectangle((x, y), w, d, fc=COL_FURN, ec=COL_EDGE, lw=0.9, zorder=4))
+        if n.startswith("Mesa Oliva"):  # mesa ovalada
+            ax.add_patch(Ellipse((x + w / 2, y + d / 2), w, d, fc=COL_FURN, ec=COL_EDGE, lw=0.9, zorder=4))
+        else:
+            ax.add_patch(Rectangle((x, y), w, d, fc=COL_FURN, ec=COL_EDGE, lw=0.9, zorder=4))
         rot = 90 if d > w * 1.6 and w < 0.7 else 0
         ax.text(x + w / 2, y + d / 2, f"{n}\n{med}", ha="center", va="center",
                 fontsize=5 if rot else 5.5, rotation=rot, zorder=6, color="#1d3550")
@@ -225,7 +227,11 @@ def make_dxf(path):
             rect(*k, "COCINA", dx)
         layer = f"MUEBLES_{key}"
         for n, x, y, w, d, med in LAYOUTS[key]["muebles"]:
-            rect(x, y, x + w, y + d, layer, dx)
+            if n.startswith("Mesa Oliva"):
+                msp.add_ellipse((dx + x + w / 2, -(y + d / 2)), major_axis=(0, d / 2), ratio=w / d,
+                                dxfattribs={"layer": layer})
+            else:
+                rect(x, y, x + w, y + d, layer, dx)
             msp.add_text(f"{n} {med}", height=0.07, dxfattribs={"layer": "TEXTOS"}).set_placement(
                 (dx + x + w / 2, -(y + d / 2)), align=ezdxf.enums.TextEntityAlignment.MIDDLE_CENTER)
         for n, cx, cy, dd, med in LAYOUTS[key].get("redondos", []):
