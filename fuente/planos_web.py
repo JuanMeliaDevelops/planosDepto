@@ -1,0 +1,21 @@
+"""Exporta cada distribución como imagen vertical para ver en el celular (PNG + SVG)."""
+import sys
+sys.path.insert(0, "/home/claude")
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import plano
+
+OUT = "/home/claude/site/planos"
+
+for key, name in [("A2", "opcion-a-ajustada"), ("A", "opcion-a-original"), ("B", "opcion-b")]:
+    fig = plt.figure(figsize=(6.5 * 0.42, 10.9 * 0.42))  # proporción del dibujo
+    ax = fig.add_axes([0, 0, 1, 1])
+    plano.draw_layout(ax, key)
+    for t in ax.texts:
+        t.set_fontsize(t.get_fontsize() * 0.68)
+        if t.get_text().startswith("Impresora 3D\n65"):
+            t.set_text("Impr. 3D\n65 × 40")
+    fig.savefig(f"{OUT}/{name}.png", dpi=420, facecolor="white")
+    plt.close(fig)
+print("ok")
