@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=4">
+<link rel="stylesheet" href="assets/style.css?v=5">
 <link rel="modulepreload" href="vendor/three/three.module.min.js">
 </head>
 <body class="viewer">
@@ -65,7 +65,22 @@
   </aside>
 
   <!-- Tarjeta principal: distribución -->
-  <section class="card dist" id="dist" aria-label="Distribución">
+  <button class="show-controls" id="show-controls" hidden>
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 10l4-4 4 4"/></svg>
+    Mostrar controles
+  </button>
+
+  <section class="card dist" id="dist" data-state="peek" aria-label="Distribución">
+    <div class="sheet-head" id="sheet-head">
+      <span class="grab" aria-hidden="true"></span>
+      <div class="sheet-bar">
+        <div class="sheet-title"><span class="dot" id="sheet-dot"></span><strong id="sheet-name">Opción A ajustada</strong></div>
+        <button class="icon-btn" id="sheet-toggle" aria-expanded="false" aria-controls="detail">Ver detalles</button>
+        <button class="icon-btn round" id="sheet-hide" aria-label="Ocultar controles" title="Ocultar controles">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+      </div>
+    </div>
     <div class="dist-head">
       <p class="card-label">Elegí una distribución</p>
       <p>El modelo 3D cambia al tocar cada opción.</p>
@@ -96,7 +111,7 @@
   "three/addons/":"./vendor/three/addons/"
 }}
 </script>
-<script type="module" src="assets/living3d.js?v=4"></script>
+<script type="module" src="assets/living3d.js?v=5"></script>
 <noscript><p class="fallback">Este modelo necesita JavaScript. <a href="planos.html">Ver los planos</a></p></noscript>
 </body>
 </html>

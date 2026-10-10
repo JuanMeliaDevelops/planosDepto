@@ -133,6 +133,8 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt
 function renderDetail(key){
   const o = OPTIONS[key];
   detailEl.dataset.l = key;
+  document.getElementById("sheet-name").textContent = o.title;
+  document.getElementById("sheet-dot").style.background = `var(--opt-${key === "A2" ? "a2" : key.toLowerCase()})`;
   const metrics = o.metrics.map(([l,v,d,cls]) =>
     `<div class="metric"><dt>${esc(l)}</dt><dd><span class="v">${esc(v)}</span>${d ? `<span class="d ${cls||""}">${esc(d)}</span>` : ""}</dd></div>`).join("");
   const isChange = key === "A2";
@@ -167,6 +169,56 @@ function setFiles(open){
 filesBtn.addEventListener("click", () => setFiles(files.classList.contains("closed")));
 document.getElementById("files-close").addEventListener("click", () => setFiles(false));
 addEventListener("keydown", e => { if(e.key === "Escape") setFiles(false); });
+
+// ---------- tarjeta de controles en el celular: compacta / abierta / oculta ----------
+const dist = document.getElementById("dist");
+const sheetHead = document.getElementById("sheet-head");
+const sheetToggle = document.getElementById("sheet-toggle");
+const showBtn = document.getElementById("show-controls");
+const mobileMQ = matchMedia("(max-width: 959px)");
+function sheetInset(){
+  // alto de la tarjeta que tapa el lienzo (para recentrar el 3D y ubicar la pista)
+  if(!mobileMQ.matches || dist.dataset.state === "hidden") return 0;
+  return Math.max(0, innerHeight - dist.getBoundingClientRect().top);
+}
+function announceSheet(){
+  const h = sheetInset();
+  document.documentElement.style.setProperty("--sheet-h", h + "px");
+  dispatchEvent(new CustomEvent("sheetchange", {detail:{inset:h}}));
+}
+function setSheet(state){
+  dist.dataset.state = state;
+  const open = state === "open";
+  sheetToggle.textContent = open ? "Ocultar detalles" : "Ver detalles";
+  sheetToggle.setAttribute("aria-expanded", String(open));
+  showBtn.hidden = state !== "hidden";
+  if(state === "hidden") showBtn.focus({preventScroll:true});
+  if(state !== "open") dist.scrollTop = 0;
+  // esperar a que termine la transición para medir
+  requestAnimationFrame(announceSheet);
+  setTimeout(announceSheet, 360);
+}
+sheetToggle.addEventListener("click", e => { e.stopPropagation(); setSheet(dist.dataset.state === "open" ? "peek" : "open"); });
+document.getElementById("sheet-hide").addEventListener("click", e => { e.stopPropagation(); setSheet("hidden"); });
+showBtn.addEventListener("click", () => setSheet("peek"));
+// deslizar la manija: arriba abre, abajo compacta u oculta; un toque alterna
+let drag = null;
+sheetHead.addEventListener("pointerdown", e => {
+  if(e.target.closest("button")) return;
+  drag = {y:e.clientY, t:performance.now()};
+  sheetHead.setPointerCapture?.(e.pointerId);
+});
+sheetHead.addEventListener("pointerup", e => {
+  if(!drag) return;
+  const dy = e.clientY - drag.y; drag = null;
+  const st = dist.dataset.state;
+  if(Math.abs(dy) < 8) setSheet(st === "open" ? "peek" : "open");
+  else if(dy < -30) setSheet("open");
+  else if(dy > 30) setSheet(st === "open" ? "peek" : "hidden");
+});
+sheetHead.addEventListener("pointercancel", () => { drag = null; });
+new ResizeObserver(announceSheet).observe(dist);
+mobileMQ.addEventListener?.("change", () => setSheet("peek"));
 
 // ---------- selección de distribución (funciona aunque no haya 3D) ----------
 let onLayout = () => {};
@@ -455,7 +507,7 @@ function viewFor(k){
   }
   const v = (k === "iso" && a < 1) ? ISO_PORTRAIT : (VIEW_OVERRIDES[currentLayout]?.[k] || VIEWS[k]);
   const t = new THREE.Vector3(...v.t), p = new THREE.Vector3(...v.p);
-  if(k === "iso" && a < 1) p.sub(t).multiplyScalar(Math.max(1, 0.62 / a)).add(t);
+  if(k === "iso" && a < 1) p.sub(t).multiplyScalar(Math.max(0.95, 0.58 / a)).add(t);
   else if(k === "iso" && innerWidth >= 960 && !SHOT) p.sub(t).multiplyScalar(1.28).add(t);
   return {p, t};
 }
@@ -467,13 +519,19 @@ function updateFov(){
 }
 
 // En escritorio la tarjeta izquierda tapa parte del lienzo: corremos el centro de la vista a la derecha.
+let bottomInset = 0;
 function applyOffset(){
   const w = stage.clientWidth, h = stage.clientHeight;
-  if(innerWidth >= 960 && !SHOT){
+  if(SHOT) camera.clearViewOffset();
+  else if(innerWidth >= 960){
     const shift = 200; // la mitad del ancho de la tarjeta + margen
     camera.setViewOffset(w, h, -shift, 0, w, h);
+  } else if(bottomInset > 0){
+    // celular: la tarjeta tapa la parte de abajo, subimos el centro de la vista
+    camera.setViewOffset(w, h, 0, Math.min(bottomInset / 2, h * 0.3), w, h);
   } else camera.clearViewOffset();
 }
+addEventListener("sheetchange", e => { bottomInset = e.detail.inset; applyOffset(); needs = true; });
 
 let anim = null, grow = null;
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
