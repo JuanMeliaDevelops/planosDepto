@@ -6,7 +6,7 @@ import math
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle, Arc, Circle, Ellipse
+from matplotlib.patches import Rectangle, Arc, Circle, Ellipse, Polygon
 import ezdxf
 
 ESCALA = 50          # 1:50
@@ -53,39 +53,40 @@ LAYOUTS = {
         "titulo": "OPCIÓN A — Comedor junto a la cocina · Living al centro · Oficina junto al ventanal",
         "muebles": [
             ("Mesa Oliva", 1.00, 0.90, 0.80, 1.20, "120 × 80 oval"),
-            ("Sillón Nube", 0.00, 2.50, 1.20, 2.00, "200 × 120"),
+            ("Sillón Nube", 0.00, 2.50, 1.20, 2.00, "200 × 120\n+ chaise 140"),
             ("Ratona", 0.05, 2.04, 0.70, 0.45, "45 × 70"),
             ("Rack TV", 2.46, 2.70, 0.34, 1.60, "160 × 34"),
             ("Escritorio", 0.00, 4.80, 0.60, 1.20, "120 × 60"),
             ("Mueble impresora 3D", 2.40, 4.60, 0.40, 1.30, "130 × 40"),
         ],
-        "sillas": [(0.72, 1.20), (0.72, 1.80), (2.08, 1.20), (2.08, 1.80), (0.95, 5.40)],
+        "chaise": (1.20, 3.60, 1.40, 4.50),
+        "sillas": [(0.72, 1.50), (2.08, 1.50), (0.95, 5.40)],
         "tv": (2.80, 3.50, "v"),
         "notas": [
             "• Paso cocina ↔ pasillo: 0,90 m frente a la mesada",
-            "• Paso al balcón: ~1,10 m entre silla de escritorio y mueble impresora",
-            "• Paso libre frente al sillón: ~1,26 m (ratona al costado)",
+            "• Paso al balcón: ~1,20 m entre silla de escritorio y mueble impresora",
+            "• Paso frente al sillón: ~1,26 m · frente a la chaise: ~1,06 m",
             "• Escritorio con luz lateral del ventanal (sin reflejos en monitores)",
         ],
     },
     "A2": {
-        "titulo": "OPCIÓN A AJUSTADA — Sillón 100 prof. · Mesa redonda Ø100 · Rack flotante · Ratona Ø55 al costado",
+        "titulo": "OPCIÓN A AJUSTADA — Sillón 100 prof. sin chaise · Mesa redonda Ø100 · Rack flotante · Ratona Ø55",
         "muebles": [
             ("Sillón Nube", 0.00, 2.60, 1.00, 2.00, "200 × 100"),
             ("Rack flotante", 2.50, 2.80, 0.30, 1.60, "160 × 30"),
             ("Escritorio", 0.00, 4.80, 0.60, 1.20, "120 × 60"),
-            ("Impresora 3D", 2.40, 5.25, 0.40, 0.65, "65 × 40"),
+            ("Mueble impresora 3D", 2.40, 4.60, 0.40, 1.30, "130 × 40"),
         ],
         "redondos": [
             ("Mesa redonda", 1.40, 1.65, 1.00, "Ø100"),
             ("Ratona", 0.35, 2.30, 0.55, "Ø55"),
         ],
-        "sillas": [(1.40, 1.03), (1.40, 2.27), (0.78, 1.65), (2.02, 1.65), (0.95, 5.40)],
+        "sillas": [(0.78, 1.65), (2.02, 1.65), (0.95, 5.40)],
         "tv": (2.80, 3.60, "v"),
         "notas": [
             "• Paso libre frente al sillón: ~1,50 m (ratona al costado)",
-            "• Paso al balcón: ~1,20 m entre silla de escritorio y módulo",
-            "• ~1 m² más de piso libre que la opción A original",
+            "• Paso al balcón: ~1,20 m entre silla de escritorio y mueble impresora",
+            "• ~0,7 m² más de piso libre que la opción A",
             "• Rack colgado a 30–40 cm del piso: se ve el piso debajo",
         ],
     },
@@ -95,16 +96,17 @@ LAYOUTS = {
             ("Mesa Oliva", 1.00, 0.90, 0.80, 1.20, "120 × 80 oval"),
             ("Escritorio", 2.20, 2.30, 0.60, 1.20, "120 × 60"),
             ("Mueble impresora 3D", 0.00, 2.10, 0.40, 1.30, "130 × 40"),
-            ("Sillón Nube", 0.00, 3.90, 1.20, 2.00, "200 × 120"),
+            ("Sillón Nube", 0.00, 3.90, 1.20, 2.00, "200 × 120\n+ chaise 140"),
             ("Ratona", 0.05, 3.43, 0.70, 0.45, "45 × 70"),
             ("Rack TV", 2.46, 4.10, 0.34, 1.60, "160 × 34"),
         ],
-        "sillas": [(0.72, 1.20), (0.72, 1.80), (2.08, 1.20), (2.08, 1.80), (1.88, 2.90)],
+        "chaise": (1.20, 5.00, 1.40, 5.90),
+        "sillas": [(0.72, 1.50), (2.08, 1.50), (1.88, 2.75)],
         "tv": (2.80, 4.90, "v"),
         "notas": [
             "• Paso central entre impresora y silla de escritorio: ~1,20 m",
             "• Living con la mejor luz y vista al balcón",
-            "• Paso al balcón frente al sillón: ~1,26 m",
+            "• Paso al balcón frente a la chaise: ~1,06 m",
             "• Escritorio contra el tabique: el cableado queda junto al rack",
         ],
     },
@@ -145,7 +147,12 @@ def draw_layout(ax, key):
 
     # muebles
     for n, x, y, w, d, med in L["muebles"]:
-        if n.startswith("Mesa Oliva"):  # mesa ovalada
+        if n.startswith("Sillón") and "chaise" in L:  # sillón con chaise en L
+            cx0, cy0, cx1, cy1 = L["chaise"]
+            pts = [(x, y), (x + w, y), (x + w, cy0), (cx1, cy0), (cx1, cy1), (x, cy1)] if cy1 >= y + d - 1e-6 else \
+                  [(x, y), (cx1, y), (cx1, cy1), (x + w, cy1), (x + w, y + d), (x, y + d)]
+            ax.add_patch(Polygon(pts, closed=True, fc=COL_FURN, ec=COL_EDGE, lw=0.9, zorder=4))
+        elif n.startswith("Mesa Oliva"):  # mesa ovalada
             ax.add_patch(Ellipse((x + w / 2, y + d / 2), w, d, fc=COL_FURN, ec=COL_EDGE, lw=0.9, zorder=4))
         else:
             ax.add_patch(Rectangle((x, y), w, d, fc=COL_FURN, ec=COL_EDGE, lw=0.9, zorder=4))
@@ -232,6 +239,8 @@ def make_dxf(path):
                                 dxfattribs={"layer": layer})
             else:
                 rect(x, y, x + w, y + d, layer, dx)
+            if n.startswith("Sillón") and "chaise" in LAYOUTS[key]:
+                rect(*LAYOUTS[key]["chaise"], layer, dx)
             msp.add_text(f"{n} {med}", height=0.07, dxfattribs={"layer": "TEXTOS"}).set_placement(
                 (dx + x + w / 2, -(y + d / 2)), align=ezdxf.enums.TextEntityAlignment.MIDDLE_CENTER)
         for n, cx, cy, dd, med in LAYOUTS[key].get("redondos", []):

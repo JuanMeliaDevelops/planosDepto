@@ -9,56 +9,57 @@ const labelsEl = document.getElementById("labels");
 
 // ---------- datos de cada distribución (para la tarjeta) ----------
 const OPTIONS = {
+  A: {
+    title: "Opción A", badge: "Tus muebles",
+    desc: "Con tus muebles: sillón con chaise del lado del ventanal, ratona al costado, mesa Oliva ovalada con 2 sillas junto a la cocina y la oficina con la impresora junto al ventanal.",
+    metrics: [
+      ["Paso frente al sillón", "1,26 m"],
+      ["Paso frente a la chaise", "1,06 m"],
+      ["Paso al balcón", "1,20 m"],
+      ["Ratona a silla comedor", "0,32 m"],
+    ],
+    note: ["good", "Entra todo con buen paso. Si sumás una tercera silla, va del lado del pasillo."],
+    listTitle: "Muebles (cm)",
+    list: [
+      ["Sillón Nube", "200 × 120 + chaise 140"], ["Mesa Oliva", "120 × 80 oval"], ["Sillas", "2 (hasta 3)"],
+      ["Rack TV", "160 × 34"], ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
+    ],
+  },
   A2: {
-    title: "Opción A ajustada", badge: "Recomendada",
-    desc: "Misma ubicación que la A original, pero con muebles más angostos y redondos. La ratona va al costado del sillón, así el centro del living queda libre.",
+    title: "Opción A ajustada", badge: "Más amplia",
+    desc: "La misma distribución, pero cambiando el sillón por uno de 100 de profundidad sin chaise y la mesa por una redonda. El living gana paso y se siente más amplio.",
     metrics: [
       ["Paso frente al sillón", "1,50 m", "+24 cm", "up"],
-      ["Paso al balcón", "1,20 m", "+10 cm", "up"],
-      ["Ratona a silla comedor", "0,20 m", "+18 cm", "up"],
-      ["Piso libre", "+1 m²", "vs. original", "up"],
+      ["Paso al balcón", "1,20 m"],
+      ["Ratona a silla comedor", "0,20 m"],
+      ["Piso libre", "+0,7 m²", "vs. A", "up"],
     ],
     note: ["good", "Las etiquetas naranjas del 3D marcan los muebles que cambian."],
-    listTitle: "Qué cambia respecto de la A original",
+    listTitle: "Qué cambia respecto de la A",
     list: [
-      ["Sillón Nube", "200 × 120", "200 × 100"],
+      ["Sillón Nube", "200 × 120 + chaise", "200 × 100"],
       ["Mesa comedor", "120 × 80 oval", "Ø 100"],
       ["Rack TV", "34 prof.", "30 flotante"],
       ["Mesa ratona", "45 × 70", "Ø 55"],
-      ["Mueble impresora", "130 × 40", "65 × 40"],
+      ["Mueble impresora", "130 × 40"],
       ["Escritorio", "120 × 60"],
-    ],
-  },
-  A: {
-    title: "Opción A original", badge: "Medidas originales",
-    desc: "Comedor con la mesa Oliva ovalada junto a la cocina, living en el centro con la ratona al costado del sillón y la oficina junto al ventanal. Todos los muebles en sus medidas originales.",
-    metrics: [
-      ["Paso frente al sillón", "1,26 m"],
-      ["Paso al balcón", "1,10 m"],
-      ["Ratona a silla comedor", "0,02 m", "justo", "tight"],
-      ["Frente a la mesada", "0,90 m"],
-    ],
-    note: ["warn", "Entra todo, pero la ratona queda pegada a una silla del comedor: al correrla para sentarse se tocan."],
-    listTitle: "Muebles (cm)",
-    list: [
-      ["Sillón Nube", "200 × 120"], ["Mesa Oliva", "120 × 80 oval"], ["Rack TV", "160 × 34"],
-      ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
+      ["Sillas", "2"],
     ],
   },
   B: {
     title: "Opción B", badge: "Living al ventanal",
-    desc: "El living pasa al ventanal, con la mejor luz y vista al balcón, y la ratona al costado del sillón. El escritorio queda en el medio, contra el tabique del dormitorio, y la impresora enfrente.",
+    desc: "El living pasa al ventanal, con la mejor luz y vista al balcón. El escritorio queda en el medio, contra el tabique del dormitorio, y la impresora enfrente.",
     metrics: [
       ["Paso central", "1,20 m"],
-      ["Paso al balcón", "1,26 m"],
+      ["Paso al balcón", "1,06 m"],
       ["Paso frente al sillón", "1,26 m"],
       ["Frente a la mesada", "0,90 m"],
     ],
-    note: ["warn", "Con la ratona al costado se circula bien, pero el escritorio queda lejos del ventanal y pierde la luz natural."],
+    note: ["warn", "Para ir al balcón se pasa frente a la chaise (1,06 m) y el escritorio queda lejos del ventanal, sin luz natural."],
     listTitle: "Muebles (cm)",
     list: [
-      ["Sillón Nube", "200 × 120"], ["Mesa Oliva", "120 × 80 oval"], ["Rack TV", "160 × 34"],
-      ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
+      ["Sillón Nube", "200 × 120 + chaise 140"], ["Mesa Oliva", "120 × 80 oval"], ["Sillas", "2 (hasta 3)"],
+      ["Rack TV", "160 × 34"], ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
     ],
   },
 };
@@ -93,12 +94,12 @@ const C = {
 // desk.pos = esquina del escritorio contra la pared; rot = 0 (pared a la izquierda, x=0) o PI (contra el tabique)
 const LAYOUTS = {
   A:{
-    sofa:{x:0,z:2.5,d:1.2,l:2.0,label:"200 × 120"},
+    sofa:{x:0,z:2.5,d:1.2,l:2.0,chaise:{w:0.9,d:1.4},label:"200 × 120 + chaise 140"},
     rack:{z:2.7,d:0.34,l:1.6,h:0.5,y0:0,label:"160 × 34"},
     tvz:3.5,
     ratona:{type:"box",x:0.05,z:2.04,w:0.7,d:0.45,label:"45 × 70"},
     mesa:{type:"oval",name:"Mesa Oliva",x:1.0,z:0.9,w:0.8,d:1.2,label:"120 × 80 oval"},
-    sillas:[[0.72,1.2],[0.72,1.8],[2.08,1.2],[2.08,1.8]],
+    sillas:[[0.72,1.5],[2.08,1.5]],
     desk:{pos:[0,4.8],rot:0},
     printer:{x:2.4,z:4.6,w:0.4,d:1.3,h:0.8,front:-1,label:"130 × 40"},
     changed:{},
@@ -109,18 +110,18 @@ const LAYOUTS = {
     tvz:3.6,
     ratona:{type:"round",x:0.35,z:2.3,r:0.275,label:"Ø 55"},
     mesa:{type:"round",name:"Mesa redonda",x:1.4,z:1.65,r:0.5,label:"Ø 100"},
-    sillas:[[1.4,1.03],[1.4,2.27],[0.78,1.65],[2.02,1.65]],
+    sillas:[[0.78,1.65],[2.02,1.65]],
     desk:{pos:[0,4.8],rot:0},
-    printer:{x:2.4,z:5.25,w:0.4,d:0.65,h:0.9,front:-1,label:"65 × 40"},
-    changed:{sofa:true,rack:true,ratona:true,mesa:true,printer:true},
+    printer:{x:2.4,z:4.6,w:0.4,d:1.3,h:0.8,front:-1,label:"130 × 40"},
+    changed:{sofa:true,rack:true,ratona:true,mesa:true},
   },
   B:{
-    sofa:{x:0,z:3.9,d:1.2,l:2.0,label:"200 × 120"},
+    sofa:{x:0,z:3.9,d:1.2,l:2.0,chaise:{w:0.9,d:1.4},label:"200 × 120 + chaise 140"},
     rack:{z:4.1,d:0.34,l:1.6,h:0.5,y0:0,label:"160 × 34"},
     tvz:4.9,
     ratona:{type:"box",x:0.05,z:3.43,w:0.7,d:0.45,label:"45 × 70"},
     mesa:{type:"oval",name:"Mesa Oliva",x:1.0,z:0.9,w:0.8,d:1.2,label:"120 × 80 oval"},
-    sillas:[[0.72,1.2],[0.72,1.8],[2.08,1.2],[2.08,1.8]],
+    sillas:[[0.72,1.5],[2.08,1.5]],
     desk:{pos:[2.8,3.5],rot:Math.PI},
     printer:{x:0,z:2.1,w:0.4,d:1.3,h:0.8,front:1,label:"130 × 40"},
     changed:{},
@@ -233,7 +234,7 @@ document.querySelectorAll("[data-l]").forEach(b => {
     onLayout(b.dataset.l);
   });
 });
-let start = "A2";
+let start = "A";
 const fromHash = location.hash.replace("#", "");
 if(LAYOUTS[fromHash]) start = fromHash;
 else { try{ const s = localStorage.getItem("living-layout"); if(LAYOUTS[s]) start = s; }catch(e){} }
@@ -437,9 +438,18 @@ function buildFurniture(key){
   furn.add(box(s.x,0,s.z,s.x+s.d,0.42,s.z+s.l,C.sofa));
   furn.add(box(s.x,0.42,s.z,s.x+0.22,0.82,s.z+s.l,C.cushion));
   furn.add(box(s.x+0.22,0.42,s.z,s.x+s.d,0.6,s.z+0.16,C.cushion));
-  furn.add(box(s.x+0.22,0.42,s.z+s.l-0.16,s.x+s.d,0.6,s.z+s.l,C.cushion));
-  const seg = (s.l-0.32)/3;
-  for(let i=0;i<3;i++){ const z0 = s.z+0.16+i*seg; furn.add(box(s.x+0.24,0.42,z0+0.01,s.x+s.d-0.04,0.52,z0+seg-0.01,C.cushion)); }
+  if(s.chaise){
+    // chaise del lado del ventanal: más profunda y sin apoyabrazos de ese lado
+    const cz0 = s.z+s.l-s.chaise.w;
+    furn.add(box(s.x+s.d,0,cz0,s.x+s.chaise.d,0.42,s.z+s.l,C.sofa));
+    furn.add(box(s.x+0.24,0.42,cz0+0.01,s.x+s.chaise.d-0.04,0.52,s.z+s.l-0.02,C.cushion));
+    const seg = (cz0-0.01-(s.z+0.16))/2;
+    for(let i=0;i<2;i++){ const z0 = s.z+0.16+i*seg; furn.add(box(s.x+0.24,0.42,z0+0.01,s.x+s.d-0.04,0.52,z0+seg-0.01,C.cushion)); }
+  } else {
+    furn.add(box(s.x+0.22,0.42,s.z+s.l-0.16,s.x+s.d,0.6,s.z+s.l,C.cushion));
+    const seg = (s.l-0.32)/3;
+    for(let i=0;i<3;i++){ const z0 = s.z+0.16+i*seg; furn.add(box(s.x+0.24,0.42,z0+0.01,s.x+s.d-0.04,0.52,z0+seg-0.01,C.cushion)); }
+  }
   tag("Sillón Nube", s.label, s.x+s.d/2, 0.95, s.z+s.l/2, furn, cls("sofa"));
 
   const r = L.rack;
