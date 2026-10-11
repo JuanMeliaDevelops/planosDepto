@@ -27,17 +27,17 @@ const OPTIONS = {
   },
   A2: {
     title: "Más amplia", badge: "Opción 2",
-    desc: "La misma distribución que la opción 1, pero cambiando el sillón por uno de 100 de profundidad sin chaise y la mesa por una redonda. El living gana paso y se siente más amplio.",
+    desc: "La misma distribución que la opción 1, pero cambiando el sillón por uno de 180 × 100 sin chaise y la mesa por una redonda. El living gana paso y se siente más amplio.",
     metrics: [
       ["Paso frente al sillón", "1,50 m", "+24 cm", "up"],
       ["Paso al balcón", "1,20 m"],
       ["Ratona a silla comedor", "0,20 m"],
-      ["Piso libre", "+0,7 m²", "vs. opción 1", "up"],
+      ["Piso libre", "+0,9 m²", "vs. opción 1", "up"],
     ],
     note: ["good", "Las etiquetas naranjas del 3D marcan los muebles que cambian."],
     listTitle: "Qué cambia respecto de la opción 1",
     list: [
-      ["Sillón Nube", "200 × 120 + chaise", "200 × 100"],
+      ["Sillón Nube", "200 × 120 + chaise", "180 × 100"],
       ["Mesa comedor", "120 × 80 oval", "Ø 100"],
       ["Rack TV", "34 prof.", "30 flotante"],
       ["Mesa ratona", "45 × 70", "Ø 55"],
@@ -105,7 +105,7 @@ const LAYOUTS = {
     changed:{},
   },
   A2:{
-    sofa:{x:0,z:2.6,d:1.0,l:2.0,label:"200 × 100"},
+    sofa:{x:0,z:2.6,d:1.0,l:1.8,label:"180 × 100"},
     rack:{z:2.8,d:0.30,l:1.6,h:0.38,y0:0.35,label:"160 × 30"},
     tvz:3.6,
     ratona:{type:"round",x:0.35,z:2.3,r:0.275,label:"Ø 55"},

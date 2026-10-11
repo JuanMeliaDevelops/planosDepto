@@ -70,9 +70,9 @@ LAYOUTS = {
         ],
     },
     "A2": {
-        "titulo": "OPCIÓN A AJUSTADA — Sillón 100 prof. sin chaise · Mesa redonda Ø100 · Rack flotante · Ratona Ø55",
+        "titulo": "OPCIÓN A AJUSTADA — Sillón 180 × 100 sin chaise · Mesa redonda Ø100 · Rack flotante · Ratona Ø55",
         "muebles": [
-            ("Sillón Nube", 0.00, 2.60, 1.00, 2.00, "200 × 100"),
+            ("Sillón Nube", 0.00, 2.60, 1.00, 1.80, "180 × 100"),
             ("Rack flotante", 2.50, 2.80, 0.30, 1.60, "160 × 30"),
             ("Escritorio", 0.00, 4.80, 0.60, 1.20, "120 × 60"),
             ("Mueble impresora 3D", 2.40, 4.60, 0.40, 1.30, "130 × 40"),
@@ -86,7 +86,7 @@ LAYOUTS = {
         "notas": [
             "• Paso libre frente al sillón: ~1,50 m (ratona al costado)",
             "• Paso al balcón: ~1,20 m entre silla de escritorio y mueble impresora",
-            "• ~0,7 m² más de piso libre que la opción A",
+            "• ~0,9 m² más de piso libre que la opción A",
             "• Rack colgado a 30–40 cm del piso: se ve el piso debajo",
         ],
     },
