@@ -53,19 +53,22 @@ LAYOUTS = {
         "titulo": "OPCIÓN A — Comedor junto a la cocina · Living al centro · Oficina junto al ventanal",
         "muebles": [
             ("Mesa Oliva", 1.00, 0.90, 0.80, 1.20, "120 × 80 oval"),
-            ("Sillón Nube", 0.00, 2.50, 1.20, 2.00, "200 × 120\n+ chaise 140"),
+            ("Sillón a medida", 0.00, 2.50, 1.00, 1.80, "180\n90×100 + 90×130"),
             ("Ratona", 0.05, 2.04, 0.70, 0.45, "45 × 70"),
             ("Rack TV", 2.46, 2.70, 0.34, 1.60, "160 × 34"),
             ("Escritorio", 0.00, 4.80, 0.60, 1.20, "120 × 60"),
             ("Mueble impresora 3D", 2.40, 4.60, 0.40, 1.30, "130 × 40"),
         ],
-        "chaise": (1.20, 3.60, 1.40, 4.50),
+        "chaise": (1.00, 3.40, 1.30, 4.30),
+        "brazos": [(0.00, 2.50, 0.80, 2.65), (0.00, 4.15, 0.80, 4.30)],
+        "divisiones": [(0.00, 3.40, 1.00, 3.40)],
+        "modtext": [(0.50, 2.98, "Sillón 180\nmódulo 90×100"), (0.62, 3.88, "módulo\n90×130")],
         "sillas": [(0.72, 1.50), (2.08, 1.50), (0.95, 5.40)],
         "tv": (2.80, 3.50, "v"),
         "notas": [
             "• Paso cocina ↔ pasillo: 0,90 m frente a la mesada",
             "• Paso al balcón: ~1,20 m entre silla de escritorio y mueble impresora",
-            "• Paso frente al sillón: ~1,26 m · frente a la chaise: ~1,06 m",
+            "• Paso frente al sillón: ~1,46 m · frente al módulo de 130: ~1,16 m",
             "• Escritorio con luz lateral del ventanal (sin reflejos en monitores)",
         ],
     },
@@ -96,17 +99,20 @@ LAYOUTS = {
             ("Mesa Oliva", 1.00, 0.90, 0.80, 1.20, "120 × 80 oval"),
             ("Escritorio", 2.20, 2.30, 0.60, 1.20, "120 × 60"),
             ("Mueble impresora 3D", 0.00, 2.10, 0.40, 1.30, "130 × 40"),
-            ("Sillón Nube", 0.00, 3.90, 1.20, 2.00, "200 × 120\n+ chaise 140"),
+            ("Sillón a medida", 0.00, 3.90, 1.00, 1.80, "180\n90×100 + 90×130"),
             ("Ratona", 0.05, 3.43, 0.70, 0.45, "45 × 70"),
             ("Rack TV", 2.46, 4.10, 0.34, 1.60, "160 × 34"),
         ],
-        "chaise": (1.20, 5.00, 1.40, 5.90),
+        "chaise": (1.00, 4.80, 1.30, 5.70),
+        "brazos": [(0.00, 3.90, 0.80, 4.05), (0.00, 5.55, 0.80, 5.70)],
+        "divisiones": [(0.00, 4.80, 1.00, 4.80)],
+        "modtext": [(0.50, 4.38, "Sillón 180\nmódulo 90×100"), (0.62, 5.28, "módulo\n90×130")],
         "sillas": [(0.72, 1.50), (2.08, 1.50), (1.88, 2.75)],
         "tv": (2.80, 4.90, "v"),
         "notas": [
             "• Paso central entre impresora y silla de escritorio: ~1,20 m",
             "• Living con la mejor luz y vista al balcón",
-            "• Paso al balcón frente a la chaise: ~1,06 m",
+            "• Paso al balcón frente al módulo de 130: ~1,16 m",
             "• Escritorio contra el tabique: el cableado queda junto al rack",
         ],
     },
@@ -157,8 +163,16 @@ def draw_layout(ax, key):
         else:
             ax.add_patch(Rectangle((x, y), w, d, fc=COL_FURN, ec=COL_EDGE, lw=0.9, zorder=4))
         rot = 90 if d > w * 1.6 and w < 0.7 else 0
+        if n.startswith("Sillón") and "modtext" in L:
+            for tx, ty, tt in L["modtext"]:
+                ax.text(tx, ty, tt, ha="center", va="center", fontsize=5.5, zorder=6, color="#1d3550")
+            continue
         ax.text(x + w / 2, y + d / 2, f"{n}\n{med}", ha="center", va="center",
                 fontsize=5 if rot else 5.5, rotation=rot, zorder=6, color="#1d3550")
+    for x0, y0, x1, y1 in L.get("brazos", []):  # brazos del sillón
+        ax.add_patch(Rectangle((x0, y0), x1 - x0, y1 - y0, fc="#d3dcea", ec=COL_EDGE, lw=0.5, zorder=4.5))
+    for x0, y0, x1, y1 in L.get("divisiones", []):  # unión entre módulos
+        ax.plot([x0, x1], [y0, y1], color=COL_EDGE, lw=0.5, ls="--", zorder=4.6)
     for n, cx, cy, dd, med in L.get("redondos", []):
         ax.add_patch(Circle((cx, cy), dd / 2, fc=COL_FURN, ec=COL_EDGE, lw=0.9, zorder=5))
         ax.text(cx, cy, f"{n}\n{med}", ha="center", va="center", fontsize=5.5, zorder=6, color="#1d3550")
