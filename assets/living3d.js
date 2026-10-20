@@ -144,10 +144,15 @@ const LAYOUTS = {
 // "mod": dos módulos 90×100 + 90×130 · "cam": 180×100 parejo + camastro suelto de 90×40 del lado del ventanal
 const SOFA_CAM = {d:1.0, l:1.8, chaise:{w:0.9, d:1.4}, modules:[{w:0.9,d:1.0},{w:0.9,d:1.0}],
   arm:{w:0.15, d:0.8, h:0.6}, addon:{w:0.9, d:0.4}, label:"180 × 100"};
+// "uno": un solo módulo de 180×100 + camastro suelto de 60 (ancho) × 70 (hacia adelante)
+const SOFA_UNO = {d:1.0, l:1.8, chaise:{w:0.6, d:1.7}, modules:[{w:1.8,d:1.0}],
+  arm:{w:0.15, d:0.8, h:0.6}, addon:{w:0.6, d:0.7}, label:"180 × 100 · 1 módulo"};
+const SOFAS = {cam: SOFA_CAM, uno: SOFA_UNO};
 let sofaVariant = "mod";
 function getLayout(key){
   const L = LAYOUTS[key];
-  if(sofaVariant === "cam" && L.sofa.modules) return {...L, sofa:{...SOFA_CAM, x:L.sofa.x, z:L.sofa.z}};
+  const v = SOFAS[sofaVariant];
+  if(v && L.sofa.modules) return {...L, sofa:{...v, x:L.sofa.x, z:L.sofa.z}};
   return L;
 }
 const OPTIONS_CAM = {
@@ -201,8 +206,48 @@ OPTIONS_CAM.C = {
   ],
   list: OPTIONS_CAM.A.list,
 };
+const OPTIONS_UNO = {
+  A: {
+    desc: "Con tus muebles: sillón de un solo módulo de 180 × 100 con un camastro suelto de 60 × 70 del lado del ventanal, ratona al costado, mesa Oliva ovalada con 2 sillas junto a la cocina y la oficina con la impresora junto al ventanal.",
+    metrics: [
+      ["Paso frente al sillón", "1,46 m"],
+      ["Paso frente al camastro", "0,76 m", "justo", "tight"],
+      ["Paso al balcón", "1,20 m"],
+      ["Ratona a silla comedor", "0,32 m"],
+    ],
+    note: ["warn", "Con el camastro puesto, el paso hasta el rack baja a 76 cm. Como es suelto, lo podés correr contra el sillón o sacarlo cuando no lo uses."],
+    list: [
+      ["Sillón a medida", "180 × 100 · 1 módulo"], ["Camastro suelto", "60 × 70"], ["Brazos", "15 ancho × 80 prof."], ["Mesa Oliva", "120 × 80 oval"],
+      ["Sillas", "2 (hasta 3)"], ["Rack TV", "160 × 34"], ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
+    ],
+  },
+  B: {
+    metrics: [
+      ["Paso central", "1,20 m"],
+      ["Paso al balcón", "0,76 m", "justo", "tight"],
+      ["Paso frente al sillón", "1,46 m"],
+      ["Frente a la mesada", "0,90 m"],
+    ],
+    note: ["warn", "Con el camastro puesto, para ir al balcón quedan 76 cm, y el escritorio queda lejos del ventanal."],
+    list: [
+      ["Sillón a medida", "180 × 100 · 1 módulo"], ["Camastro suelto", "60 × 70"], ["Mesa Oliva", "120 × 80 oval"], ["Sillas", "2 (hasta 3)"],
+      ["Rack TV", "160 × 34"], ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
+    ],
+  },
+};
+OPTIONS_UNO.C = {
+  metrics: [
+    ["Paso al balcón", "1,20 m"],
+    ["Silla escritorio a sillón", "0,63 m"],
+    ["Paso frente al camastro", "0,76 m", "justo", "tight"],
+    ["Ratona a silla comedor", "0,17 m", "justo", "tight"],
+  ],
+  note: ["warn", "Con el camastro puesto, el paso hasta el rack baja a 76 cm; al ser suelto lo podés correr cuando no lo uses."],
+  list: OPTIONS_UNO.A.list,
+};
+const VARIANT_OPTS = {cam: OPTIONS_CAM, uno: OPTIONS_UNO};
 function getOption(key){
-  const v = sofaVariant === "cam" && OPTIONS_CAM[key];
+  const v = VARIANT_OPTS[sofaVariant]?.[key];
   return v ? {...OPTIONS[key], ...v} : OPTIONS[key];
 }
 
@@ -375,7 +420,7 @@ let currentKey = "A";
 function pressGroup(sel, btn){ document.querySelectorAll(sel).forEach(b => b.setAttribute("aria-pressed", String(b === btn))); }
 const sofaSwitch = document.getElementById("sofa-switch");
 function saveState(){
-  const h = currentKey + (sofaVariant === "cam" && LAYOUTS[currentKey].sofa.modules ? "-cam" : "");
+  const h = currentKey + (sofaVariant !== "mod" && LAYOUTS[currentKey].sofa.modules ? "-" + sofaVariant : "");
   try{ localStorage.setItem("living-layout", currentKey); localStorage.setItem("living-sofa", sofaVariant); }catch(e){}
   try{ history.replaceState(null, "", "#" + h); }catch(e){}
 }
@@ -405,15 +450,15 @@ document.querySelectorAll("[data-sofa]").forEach(b => {
     refreshPlans();
     saveState();
     onSofa();
-    toast(sofaVariant === "cam" ? "Sillón: 180 × 100 + camastro" : "Sillón: 2 módulos (100 + 130)");
+    toast({mod:"Sillón: 2 módulos (100 + 130)", cam:"Sillón: 180 × 100 + camastro 90 × 40", uno:"Sillón: 1 módulo + camastro 60 × 70"}[sofaVariant]);
   });
 });
 {
   const [hk, hv] = location.hash.replace("#", "").split("-");
   if(LAYOUTS[hk]) currentKey = hk;
   else { try{ const s = localStorage.getItem("living-layout"); if(LAYOUTS[s]) currentKey = s; }catch(e){} }
-  if(hv === "cam") sofaVariant = "cam";
-  else if(!hk){ try{ if(localStorage.getItem("living-sofa") === "cam") sofaVariant = "cam"; }catch(e){} }
+  if(SOFAS[hv]) sofaVariant = hv;
+  else if(!hk){ try{ const v = localStorage.getItem("living-sofa"); if(SOFAS[v]) sofaVariant = v; }catch(e){} }
 }
 const start = currentKey;
 pressGroup(".opt", document.querySelector(`.opt[data-l="${start}"]`));
@@ -646,7 +691,7 @@ function buildFurniture(key){
       furn.add(box(cx0, SEAT - 0.1, cz0 + 0.015, cx1 - 0.005, SEAT + 0.03, cz1 - 0.015, C.cushion));
       for(const [fx,fz] of [[cx0+0.04,cz0+0.05],[cx1-0.04,cz0+0.05],[cx0+0.04,cz1-0.05],[cx1-0.04,cz1-0.05]])
         furn.add(box(fx-0.015,0,fz-0.015,fx+0.015,0.04,fz+0.015,C.black));
-      tag("Camastro", "90 × 40", (cx0+cx1)/2, 0.6, (cz0+cz1)/2, furn);
+      tag("Camastro", `${Math.round(s.addon.w*100)} × ${Math.round(s.addon.d*100)}`, (cx0+cx1)/2, 0.6, (cz0+cz1)/2, furn);
     }
   } else {
   furn.add(box(s.x,0,s.z,s.x+s.d,0.42,s.z+s.l,C.sofa));

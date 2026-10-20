@@ -144,20 +144,28 @@ LAYOUTS["C"] = {
 
 # Variantes con el sillón 180 × 100 parejo + camastro suelto de 90 × 40 del lado del ventanal
 import copy
-def _variante_camastro(key, z0):
+def _variante_camastro(key, z0, cam_w=0.90, cam_d=0.40, modulos=2):
     L = copy.deepcopy(LAYOUTS[key])
-    L["titulo"] = L["titulo"] + " · Sillón 180 × 100 + camastro 90 × 40"
+    medida = f"{round(cam_w * 100)} × {round(cam_d * 100)}"
+    L["titulo"] = L["titulo"] + f" · Sillón 180 × 100 ({modulos} módulo{'s' if modulos > 1 else ''}) + camastro {medida}"
     L["muebles"] = [m for m in L["muebles"] if not m[0].startswith("Sillón")]
     L["muebles"].append(("Sillón a medida", 0.00, z0, 1.00, 1.80, "180 × 100"))
-    L["muebles"].append(("Camastro", 1.02, z0 + 0.90, 0.38, 0.90, "90 × 40"))
+    L["muebles"].append(("Camastro", 1.02, z0 + 1.80 - cam_w, cam_d - 0.02, cam_w, medida))
     L.pop("chaise", None)
-    L["modtext"] = [(0.50, z0 + 0.45, "Sillón a medida\n180 × 100"), (0.50, z0 + 1.35, "2 módulos\nde 90")]
-    L["divisiones"] = [(0.00, z0 + 0.90, 1.00, z0 + 0.90)]
-    L["notas"] = [n.replace("módulo de 130: ~1,16 m", "camastro: ~1,06 m") for n in L["notas"]]
+    if modulos == 2:
+        L["divisiones"] = [(0.00, z0 + 0.90, 1.00, z0 + 0.90)]
+        L["modtext"] = [(0.50, z0 + 0.45, "Sillón a medida\n180 × 100"), (0.50, z0 + 1.35, "2 módulos\nde 90")]
+    else:
+        L["divisiones"] = []
+        L["modtext"] = [(0.50, z0 + 0.90, "Sillón a medida\n180 × 100\n1 módulo")]
+    paso = 2.46 - 1.00 - cam_d
+    L["notas"] = [n.replace("módulo de 130: ~1,16 m", f"camastro: ~{paso:.2f} m".replace(".", ",")) for n in L["notas"]]
     return L
 LAYOUTS["A_cam"] = _variante_camastro("A", 2.50)
 LAYOUTS["B_cam"] = _variante_camastro("B", 3.90)
 LAYOUTS["C_cam"] = _variante_camastro("C", 2.35)
+for _k, _z in (("A", 2.50), ("B", 3.90), ("C", 2.35)):
+    LAYOUTS[_k + "_uno"] = _variante_camastro(_k, _z, cam_w=0.60, cam_d=0.70, modulos=1)
 
 COL_WALL = "#2b2b2b"
 COL_FURN = "#e8eef5"

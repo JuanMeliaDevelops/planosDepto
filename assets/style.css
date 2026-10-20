@@ -348,7 +348,7 @@ details.more .more-body{display:flex;flex-direction:column;gap:10px;padding-top:
 /* variante de sillón */
 .sofa-switch{display:flex;flex-direction:column;gap:6px;margin-inline:0!important}
 .sofa-switch .mini-label{margin:0 16px}
-.seg2{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.seg2{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;padding:4px;margin:0 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
 .seg2 button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:44px;padding:6px 10px;border:0;border-radius:9px;background:transparent;
   color:var(--fg);font:inherit;text-align:left;cursor:pointer;min-width:0}
 .seg2 button strong{font-size:13px;font-weight:650;line-height:1.2}

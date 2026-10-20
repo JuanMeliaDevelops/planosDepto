@@ -8,7 +8,7 @@ import plano
 
 OUT = "/home/claude/site/planos"
 
-for key, name in [("A2", "opcion-a-ajustada"), ("A", "opcion-a-original"), ("B", "opcion-b"), ("A_cam", "opcion-1-camastro"), ("B_cam", "opcion-3-camastro"), ("C", "opcion-4"), ("C_cam", "opcion-4-camastro")]:
+for key, name in [("A2", "opcion-a-ajustada"), ("A", "opcion-a-original"), ("B", "opcion-b"), ("A_cam", "opcion-1-camastro"), ("B_cam", "opcion-3-camastro"), ("C", "opcion-4"), ("C_cam", "opcion-4-camastro"), ("A_uno", "opcion-1-uno"), ("B_uno", "opcion-3-uno"), ("C_uno", "opcion-4-uno")]:
     fig = plt.figure(figsize=(6.5 * 0.42, 10.9 * 0.42))  # proporción del dibujo
     ax = fig.add_axes([0, 0, 1, 1])
     plano.draw_layout(ax, key)
