@@ -128,11 +128,55 @@ const LAYOUTS = {
   },
 };
 
+// ---------- variante de sillón (opciones 1 y 3) ----------
+// "mod": dos módulos 90×100 + 90×130 · "cam": 180×100 parejo + camastro suelto de 90×40 del lado del ventanal
+const SOFA_CAM = {d:1.0, l:1.8, chaise:{w:0.9, d:1.4}, modules:[{w:0.9,d:1.0},{w:0.9,d:1.0}],
+  arm:{w:0.15, d:0.8, h:0.6}, addon:{w:0.9, d:0.4}, label:"180 × 100"};
+let sofaVariant = "mod";
+function getLayout(key){
+  const L = LAYOUTS[key];
+  if(sofaVariant === "cam" && L.sofa.modules) return {...L, sofa:{...SOFA_CAM, x:L.sofa.x, z:L.sofa.z}};
+  return L;
+}
+const OPTIONS_CAM = {
+  A: {
+    desc: "Con tus muebles: sillón a medida de 180 × 100 con un camastro suelto de 90 × 40 del lado del ventanal, ratona al costado, mesa Oliva ovalada con 2 sillas junto a la cocina y la oficina con la impresora junto al ventanal.",
+    metrics: [
+      ["Paso frente al sillón", "1,46 m"],
+      ["Paso frente al camastro", "1,06 m"],
+      ["Paso al balcón", "1,20 m"],
+      ["Ratona a silla comedor", "0,32 m"],
+    ],
+    note: ["good", "El camastro es suelto: lo podés correr o sacar cuando necesites más paso."],
+    list: [
+      ["Sillón a medida", "180 × 100"], ["Camastro suelto", "90 × 40"], ["Brazos", "15 ancho × 80 prof."], ["Mesa Oliva", "120 × 80 oval"],
+      ["Sillas", "2 (hasta 3)"], ["Rack TV", "160 × 34"], ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
+    ],
+  },
+  B: {
+    metrics: [
+      ["Paso central", "1,20 m"],
+      ["Paso al balcón", "1,06 m"],
+      ["Paso frente al sillón", "1,46 m"],
+      ["Frente a la mesada", "0,90 m"],
+    ],
+    note: ["warn", "Para ir al balcón se pasa frente al camastro (1,06 m) y el escritorio queda lejos del ventanal, sin luz natural."],
+    list: [
+      ["Sillón a medida", "180 × 100"], ["Camastro suelto", "90 × 40"], ["Mesa Oliva", "120 × 80 oval"], ["Sillas", "2 (hasta 3)"],
+      ["Rack TV", "160 × 34"], ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
+    ],
+  },
+};
+function getOption(key){
+  const v = sofaVariant === "cam" && OPTIONS_CAM[key];
+  return v ? {...OPTIONS[key], ...v} : OPTIONS[key];
+}
+
 // ---------- tarjeta de distribución ----------
 const detailEl = document.getElementById("detail");
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function renderDetail(key){
-  const o = OPTIONS[key];
+  const o = getOption(key);
   detailEl.dataset.l = key;
   document.getElementById("sheet-name").textContent = o.title;
   document.getElementById("sheet-dot").style.background = `var(--opt-${key === "A2" ? "a2" : key.toLowerCase()})`;
@@ -260,7 +304,7 @@ lb.addEventListener("touchend", e => {
 
 // ---------- mini plano de cada opción (vista desde arriba, ventanal a la derecha) ----------
 function planSVG(key){
-  const L = LAYOUTS[key];
+  const L = getLayout(key);
   const R = (x0,z0,x1,z1,cls) => `<rect x="${Math.min(z0,z1)}" y="${Math.min(x0,x1)}" width="${Math.abs(z1-z0)}" height="${Math.abs(x1-x0)}" rx="0.04" class="${cls}"/>`;
   let g = "";
   const s = L.sofa;
@@ -289,26 +333,56 @@ function toast(msg){
   clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove("show"), 1700);
 }
 
-// ---------- selección de distribución (funciona aunque no haya 3D) ----------
-let onLayout = () => {};
+// ---------- selección de distribución y de sillón (funciona aunque no haya 3D) ----------
+let onLayout = () => {}, onSofa = () => {};
+let currentKey = "A";
 function pressGroup(sel, btn){ document.querySelectorAll(sel).forEach(b => b.setAttribute("aria-pressed", String(b === btn))); }
-document.querySelectorAll("[data-l]").forEach(b => {
-  if(!b.classList.contains("opt")) return;
+const sofaSwitch = document.getElementById("sofa-switch");
+function saveState(){
+  const h = currentKey + (sofaVariant === "cam" && LAYOUTS[currentKey].sofa.modules ? "-cam" : "");
+  try{ localStorage.setItem("living-layout", currentKey); localStorage.setItem("living-sofa", sofaVariant); }catch(e){}
+  try{ history.replaceState(null, "", "#" + h); }catch(e){}
+}
+function refreshPlans(){ document.querySelectorAll(".opt-plan").forEach(el => { el.innerHTML = planSVG(el.dataset.plan); }); }
+function syncSofaSwitch(){
+  sofaSwitch.hidden = !LAYOUTS[currentKey].sofa.modules;
+  pressGroup("[data-sofa]", document.querySelector(`[data-sofa="${sofaVariant}"]`));
+}
+document.querySelectorAll(".opt[data-l]").forEach(b => {
   b.addEventListener("click", () => {
+    currentKey = b.dataset.l;
     pressGroup(".opt", b);
-    renderDetail(b.dataset.l);
-    try{ localStorage.setItem("living-layout", b.dataset.l); }catch(e){}
-    try{ history.replaceState(null, "", "#" + b.dataset.l); }catch(e){}
-    onLayout(b.dataset.l);
-    toast(`Mostrando: ${OPTIONS[b.dataset.l].title}`);
+    renderDetail(currentKey);
+    syncSofaSwitch();
+    saveState();
+    onLayout(currentKey);
+    toast(`Mostrando: ${OPTIONS[currentKey].title}`);
   });
 });
-let start = "A";
-const fromHash = location.hash.replace("#", "");
-if(LAYOUTS[fromHash]) start = fromHash;
-else { try{ const s = localStorage.getItem("living-layout"); if(LAYOUTS[s]) start = s; }catch(e){} }
+document.querySelectorAll("[data-sofa]").forEach(b => {
+  b.addEventListener("click", () => {
+    if(sofaVariant === b.dataset.sofa) return;
+    sofaVariant = b.dataset.sofa;
+    syncSofaSwitch();
+    renderDetail(currentKey);
+    refreshPlans();
+    saveState();
+    onSofa();
+    toast(sofaVariant === "cam" ? "Sillón: 180 × 100 + camastro" : "Sillón: 2 módulos (100 + 130)");
+  });
+});
+{
+  const [hk, hv] = location.hash.replace("#", "").split("-");
+  if(LAYOUTS[hk]) currentKey = hk;
+  else { try{ const s = localStorage.getItem("living-layout"); if(LAYOUTS[s]) currentKey = s; }catch(e){} }
+  if(hv === "cam") sofaVariant = "cam";
+  else if(!hk){ try{ if(localStorage.getItem("living-sofa") === "cam") sofaVariant = "cam"; }catch(e){} }
+}
+const start = currentKey;
 pressGroup(".opt", document.querySelector(`.opt[data-l="${start}"]`));
 renderDetail(start);
+syncSofaSwitch();
+refreshPlans();
 
 if(has3D) init3D();
 
@@ -499,7 +573,7 @@ function disposeGroup(g){
 function buildFurniture(key){
   scene.remove(furn); disposeGroup(furn);
   furn = new THREE.Group(); scene.add(furn);
-  const L = LAYOUTS[key], ch = L.changed;
+  const L = getLayout(key), ch = L.changed;
   const cls = k => ch[k] ? "changed" : "";
 
   const s = L.sofa;
@@ -520,6 +594,15 @@ function buildFurniture(key){
       if(last)  furn.add(box(s.x, SEAT - 0.1, z1 - AW, s.x + AD, AH, z1, C.sofa));
       z0 = z1;
     });
+    if(s.addon){
+      // camastro suelto delante del módulo del lado del ventanal
+      const cz1 = s.z + s.l, cz0 = cz1 - s.addon.w, cx0 = s.x + s.d + 0.015, cx1 = s.x + s.d + s.addon.d;
+      furn.add(box(cx0, 0.04, cz0 + 0.01, cx1, SEAT - 0.1, cz1 - 0.01, C.sofa));
+      furn.add(box(cx0, SEAT - 0.1, cz0 + 0.015, cx1 - 0.005, SEAT + 0.03, cz1 - 0.015, C.cushion));
+      for(const [fx,fz] of [[cx0+0.04,cz0+0.05],[cx1-0.04,cz0+0.05],[cx0+0.04,cz1-0.05],[cx1-0.04,cz1-0.05]])
+        furn.add(box(fx-0.015,0,fz-0.015,fx+0.015,0.04,fz+0.015,C.black));
+      tag("Camastro", "90 × 40", (cx0+cx1)/2, 0.6, (cz0+cz1)/2, furn);
+    }
   } else {
   furn.add(box(s.x,0,s.z,s.x+s.d,0.42,s.z+s.l,C.sofa));
   furn.add(box(s.x,0.42,s.z,s.x+0.22,0.82,s.z+s.l,C.cushion));
@@ -641,6 +724,11 @@ function goView(k, instant = false){
 }
 
 document.querySelectorAll(".chip[data-v]").forEach(b => b.addEventListener("click", () => { pressGroup(".chip[data-v]", b); goView(b.dataset.v); }));
+onSofa = () => {
+  buildFurniture(currentLayout);
+  if(!reduce){ furn.scale.y = 0.02; grow = {start:performance.now(), dur:450}; }
+  needs = true;
+};
 onLayout = key => {
   currentLayout = key;
   buildFurniture(key);

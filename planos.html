@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=11">
+<link rel="stylesheet" href="assets/style.css?v=12">
 </head>
 <body>
 <main class="wrap">
@@ -56,13 +56,24 @@
     </div>
 
     <div class="plan" role="tabpanel" id="panel-a" aria-labelledby="tab-a">
+      <div class="seg2 plan-variant" role="group" aria-label="Variante de sillón" data-panel="a">
+        <button data-pv="mod" aria-pressed="true"><strong>2 módulos</strong><small>90×100 + 90×130</small></button>
+        <button data-pv="cam" aria-pressed="false"><strong>180 × 100 + camastro</strong><small>camastro suelto 90×40</small></button>
+      </div>
       <figure class="plan-figure">
-        <a href="planos/opcion-a-original.png" target="_blank" rel="noopener"><img src="planos/opcion-a-original.png" width="1146" height="1922" alt="Plano de la opción A: mesa Oliva ovalada con 2 sillas junto a la cocina, sillón a medida de 180 en dos módulos y ratona al costado, escritorio e impresora junto al ventanal" loading="lazy"></a>
+        <a href="planos/opcion-a-original.png" data-mod="planos/opcion-a-original.png" data-cam="planos/opcion-1-camastro.png" target="_blank" rel="noopener"><img src="planos/opcion-a-original.png" width="1146" height="1922" alt="Plano de la opción A: mesa Oliva ovalada con 2 sillas junto a la cocina, sillón a medida de 180 en dos módulos y ratona al costado, escritorio e impresora junto al ventanal" loading="lazy"></a>
         <figcaption><span>Opción 1 · Tus muebles</span><span class="num">medidas en metros</span></figcaption>
       </figure>
-      <ul class="facts">
+      <ul class="facts" data-pv-list="mod">
         <li><span>Paso frente al sillón</span><span class="num">~1,46 m</span></li>
         <li><span>Paso frente al módulo de 130</span><span class="num">~1,16 m</span></li>
+        <li><span>Paso al balcón</span><span class="num">~1,20 m</span></li>
+        <li><span>Ratona a silla del comedor</span><span class="num">~0,32 m</span></li>
+        <li><span>Frente a la mesada</span><span class="num">0,90 m</span></li>
+      </ul>
+      <ul class="facts" data-pv-list="cam" hidden>
+        <li><span>Paso frente al sillón</span><span class="num">~1,46 m</span></li>
+        <li><span>Paso frente al camastro</span><span class="num">~1,06 m</span></li>
         <li><span>Paso al balcón</span><span class="num">~1,20 m</span></li>
         <li><span>Ratona a silla del comedor</span><span class="num">~0,32 m</span></li>
         <li><span>Frente a la mesada</span><span class="num">0,90 m</span></li>
@@ -84,14 +95,24 @@
     </div>
 
     <div class="plan" role="tabpanel" id="panel-b" aria-labelledby="tab-b" hidden>
+      <div class="seg2 plan-variant" role="group" aria-label="Variante de sillón" data-panel="b">
+        <button data-pv="mod" aria-pressed="true"><strong>2 módulos</strong><small>90×100 + 90×130</small></button>
+        <button data-pv="cam" aria-pressed="false"><strong>180 × 100 + camastro</strong><small>camastro suelto 90×40</small></button>
+      </div>
       <figure class="plan-figure">
-        <a href="planos/opcion-b.png" target="_blank" rel="noopener"><img src="planos/opcion-b.png" width="1146" height="1922" alt="Plano de la opción B: living con el sillón a medida junto al ventanal, escritorio contra el tabique en el medio, comedor junto a la cocina" loading="lazy"></a>
+        <a href="planos/opcion-b.png" data-mod="planos/opcion-b.png" data-cam="planos/opcion-3-camastro.png" target="_blank" rel="noopener"><img src="planos/opcion-b.png" width="1146" height="1922" alt="Plano de la opción B: living con el sillón a medida junto al ventanal, escritorio contra el tabique en el medio, comedor junto a la cocina" loading="lazy"></a>
         <figcaption><span>Opción 3 · Living al ventanal</span><span class="num">medidas en metros</span></figcaption>
       </figure>
-      <ul class="facts">
+      <ul class="facts" data-pv-list="mod">
         <li><span>Living junto al ventanal</span><span class="num">mejor luz</span></li>
         <li><span>Paso central (impresora–silla)</span><span class="num">~1,20 m</span></li>
         <li><span>Paso al balcón (frente al módulo de 130)</span><span class="num">~1,16 m</span></li>
+        <li><span>Frente a la mesada</span><span class="num">0,90 m</span></li>
+      </ul>
+      <ul class="facts" data-pv-list="cam" hidden>
+        <li><span>Living junto al ventanal</span><span class="num">mejor luz</span></li>
+        <li><span>Paso central (impresora–silla)</span><span class="num">~1,20 m</span></li>
+        <li><span>Paso al balcón (frente al camastro)</span><span class="num">~1,06 m</span></li>
         <li><span>Frente a la mesada</span><span class="num">0,90 m</span></li>
       </ul>
     </div>
@@ -124,6 +145,7 @@
         <thead><tr><th scope="col">Mueble</th><th scope="col">1 · Tus muebles</th><th scope="col">2 · Más amplia</th></tr></thead>
         <tbody>
           <tr><td>Sillón</td><td class="num">180: 90&nbsp;×&nbsp;100 + 90&nbsp;×&nbsp;130</td><td class="num new">180&nbsp;×&nbsp;100 parejo</td></tr>
+          <tr><td>Variante con camastro</td><td class="num" colspan="2">180&nbsp;×&nbsp;100 parejo + camastro suelto 90&nbsp;×&nbsp;40 (opciones 1 y 3)</td></tr>
           <tr><td>Brazos del sillón</td><td class="num" colspan="2">15 de ancho × 80 de profundidad, uno en cada extremo</td></tr>
           <tr><td>Mesa comedor</td><td class="num">120&nbsp;×&nbsp;80 oval</td><td class="num new">Ø&nbsp;100 redonda</td></tr>
           <tr><td>Rack TV</td><td class="num">160&nbsp;×&nbsp;34</td><td class="num new">160&nbsp;×&nbsp;30 flotante</td></tr>
@@ -177,6 +199,19 @@
     t.addEventListener('keydown', function(e){
       var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
       if(d){ e.preventDefault(); select(tabs[(i + d + tabs.length) % tabs.length], true); }
+    });
+  });
+  // variante de sillón dentro de las opciones 1 y 3
+  Array.prototype.forEach.call(document.querySelectorAll('.plan-variant'), function(g){
+    var panel = g.parentNode;
+    Array.prototype.forEach.call(g.querySelectorAll('button'), function(b){
+      b.addEventListener('click', function(){
+        var v = b.getAttribute('data-pv');
+        Array.prototype.forEach.call(g.querySelectorAll('button'), function(x){ x.setAttribute('aria-pressed', x === b); });
+        var link = panel.querySelector('a[data-mod]'), img = link.querySelector('img');
+        link.href = link.getAttribute('data-' + v); img.src = link.getAttribute('data-' + v);
+        Array.prototype.forEach.call(panel.querySelectorAll('[data-pv-list]'), function(ul){ ul.hidden = ul.getAttribute('data-pv-list') !== v; });
+      });
     });
   });
   var h = document.getElementById('tab-' + location.hash.slice(1));

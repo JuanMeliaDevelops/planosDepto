@@ -118,6 +118,22 @@ LAYOUTS = {
     },
 }
 
+# Variantes con el sillón 180 × 100 parejo + camastro suelto de 90 × 40 del lado del ventanal
+import copy
+def _variante_camastro(key, z0):
+    L = copy.deepcopy(LAYOUTS[key])
+    L["titulo"] = L["titulo"] + " · Sillón 180 × 100 + camastro 90 × 40"
+    L["muebles"] = [m for m in L["muebles"] if not m[0].startswith("Sillón")]
+    L["muebles"].append(("Sillón a medida", 0.00, z0, 1.00, 1.80, "180 × 100"))
+    L["muebles"].append(("Camastro", 1.02, z0 + 0.90, 0.38, 0.90, "90 × 40"))
+    L.pop("chaise", None)
+    L["modtext"] = [(0.50, z0 + 0.45, "Sillón a medida\n180 × 100"), (0.50, z0 + 1.35, "2 módulos\nde 90")]
+    L["divisiones"] = [(0.00, z0 + 0.90, 1.00, z0 + 0.90)]
+    L["notas"] = [n.replace("módulo de 130: ~1,16 m", "camastro: ~1,06 m") for n in L["notas"]]
+    return L
+LAYOUTS["A_cam"] = _variante_camastro("A", 2.50)
+LAYOUTS["B_cam"] = _variante_camastro("B", 3.90)
+
 COL_WALL = "#2b2b2b"
 COL_FURN = "#e8eef5"
 COL_EDGE = "#3b5b80"

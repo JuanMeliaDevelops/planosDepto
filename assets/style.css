@@ -344,3 +344,20 @@ details.more .more-body{display:flex;flex-direction:column;gap:10px;padding-top:
 .opt-plan .pf.soft{fill:color-mix(in srgb,var(--muted) 22%,var(--surface))}
 .opt-plan .pf.main{fill:var(--c)}
 .opt-plan .pf.desk{fill:color-mix(in srgb,var(--c) 45%,var(--surface))}
+
+/* variante de sillón */
+.sofa-switch{display:flex;flex-direction:column;gap:6px;margin-inline:0!important}
+.sofa-switch .mini-label{margin:0 16px}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.seg2 button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:44px;padding:6px 10px;border:0;border-radius:9px;background:transparent;
+  color:var(--fg);font:inherit;text-align:left;cursor:pointer;min-width:0}
+.seg2 button strong{font-size:13px;font-weight:650;line-height:1.2}
+.seg2 button small{font-size:11px;color:var(--muted);line-height:1.2}
+.seg2 button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 1px var(--line)}
+@media (max-width:959px){
+  .dist .sofa-switch{order:1}
+  .dist[data-state="peek"] .sofa-switch .mini-label{display:none}
+  .dist[data-state="peek"] .seg2 button small{display:none}
+  .dist[data-state="peek"] .seg2 button{min-height:38px;justify-content:center}
+}
+.plan-variant{margin:0;grid-column:1/-1}

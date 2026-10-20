@@ -119,7 +119,7 @@
     <div class="opts" role="group" aria-label="Distribuciones">
       <button class="opt" data-l="A" aria-pressed="true">
         <span class="opt-plan" data-plan="A" aria-hidden="true"></span>
-        <span class="opt-text"><span class="t"><span class="opt-num">1</span>Tus muebles</span><span class="s">Living al centro, con chaise</span></span>
+        <span class="opt-text"><span class="t"><span class="opt-num">1</span>Tus muebles</span><span class="s">Living al centro</span></span>
         <span class="opt-check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       </button>
       <button class="opt" data-l="A2" aria-pressed="false">
@@ -132,6 +132,14 @@
         <span class="opt-text"><span class="t"><span class="opt-num">3</span>Living al ventanal</span><span class="s">Escritorio en el medio</span></span>
         <span class="opt-check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       </button>
+    </div>
+
+    <div class="sofa-switch" id="sofa-switch">
+      <p class="mini-label">Variante de sillón</p>
+      <div class="seg2" role="group" aria-label="Variante de sillón">
+        <button data-sofa="mod" aria-pressed="true"><strong>2 módulos</strong><small>90×100 + 90×130</small></button>
+        <button data-sofa="cam" aria-pressed="false"><strong>180 × 100 + camastro</strong><small>camastro suelto 90×40</small></button>
+      </div>
     </div>
 
     <div class="detail" id="detail" data-l="A" aria-live="polite"></div>
@@ -157,7 +165,7 @@
   "three/addons/":"./vendor/three/addons/"
 }}
 </script>
-<script type="module" src="assets/living3d.js?v=11"></script>
+<script type="module" src="assets/living3d.js?v=12"></script>
 <noscript><p class="fallback">Este modelo necesita JavaScript. <a href="planos.html">Ver los planos</a></p></noscript>
 </body>
 </html>
