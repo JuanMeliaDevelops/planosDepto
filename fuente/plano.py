@@ -118,6 +118,30 @@ LAYOUTS = {
     },
 }
 
+LAYOUTS["C"] = {
+    "titulo": "OPCIÓN 4 — Escritorio en el rincón del ventanal, mirando al balcón · Living corrido hacia la cocina",
+    "muebles": [
+        ("Mesa Oliva", 1.00, 0.90, 0.80, 1.20, "120 × 80 oval"),
+        ("Sillón a medida", 0.00, 2.35, 1.00, 1.80, "180\n90×100 + 90×130"),
+        ("Ratona", 0.05, 1.89, 0.70, 0.45, "45 × 70"),
+        ("Rack TV", 2.46, 2.45, 0.34, 1.60, "160 × 34"),
+        ("Escritorio", 0.00, 5.35, 1.20, 0.60, "120 × 60"),
+        ("Mueble impresora 3D", 2.40, 4.60, 0.40, 1.30, "130 × 40"),
+    ],
+    "chaise": (1.00, 3.25, 1.30, 4.15),
+    "brazos": [(0.00, 2.35, 0.80, 2.50), (0.00, 4.00, 0.80, 4.15)],
+    "divisiones": [(0.00, 3.25, 1.00, 3.25)],
+    "modtext": [(0.50, 2.83, "Sillón 180\nmódulo 90×100"), (0.62, 3.73, "módulo\n90×130")],
+    "sillas": [(0.72, 1.50), (2.08, 1.50), (0.60, 5.00)],
+    "tv": (2.80, 3.25, "v"),
+    "notas": [
+        "• Escritorio mirando al balcón: sin reflejos en los monitores",
+        "• Paso al balcón entre escritorio e impresora: ~1,20 m",
+        "• Silla de escritorio a sillón: ~0,63 m",
+        "• Paso frente al sillón: ~1,46 m · frente al módulo de 130: ~1,16 m",
+    ],
+}
+
 # Variantes con el sillón 180 × 100 parejo + camastro suelto de 90 × 40 del lado del ventanal
 import copy
 def _variante_camastro(key, z0):
@@ -133,6 +157,7 @@ def _variante_camastro(key, z0):
     return L
 LAYOUTS["A_cam"] = _variante_camastro("A", 2.50)
 LAYOUTS["B_cam"] = _variante_camastro("B", 3.90)
+LAYOUTS["C_cam"] = _variante_camastro("C", 2.35)
 
 COL_WALL = "#2b2b2b"
 COL_FURN = "#e8eef5"
@@ -246,7 +271,7 @@ def make_dxf(path):
     doc = ezdxf.new("R2010", setup=True)
     doc.units = ezdxf.units.M
     msp = doc.modelspace()
-    for name, color in [("MUROS", 7), ("COCINA", 8), ("MUEBLES_A", 5), ("MUEBLES_B", 3), ("MUEBLES_A2", 1), ("TEXTOS", 2)]:
+    for name, color in [("MUROS", 7), ("COCINA", 8), ("MUEBLES_A", 5), ("MUEBLES_B", 3), ("MUEBLES_A2", 1), ("MUEBLES_C", 6), ("TEXTOS", 2)]:
         doc.layers.add(name, color=color)
 
     def rect(x0, y0, x1, y1, layer, dx=0):
@@ -254,7 +279,7 @@ def make_dxf(path):
         pts = [(x0 + dx, -y0), (x1 + dx, -y0), (x1 + dx, -y1), (x0 + dx, -y1)]
         msp.add_lwpolyline(pts, close=True, dxfattribs={"layer": layer})
 
-    for i, key in enumerate(["A", "A2", "B"]):
+    for i, key in enumerate(["A", "A2", "B", "C"]):
         dx = i * 8.0
         for w in WALLS:
             rect(*w, "MUROS", dx)

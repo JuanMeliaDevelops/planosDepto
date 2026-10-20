@@ -126,6 +126,18 @@ const LAYOUTS = {
     printer:{x:0,z:2.1,w:0.4,d:1.3,h:0.8,front:1,label:"130 × 40"},
     changed:{},
   },
+  C:{
+    // escritorio en el rincón del ventanal, mirando hacia afuera; living corrido 15 cm hacia la cocina
+    sofa:{x:0,z:2.35,d:1.0,l:1.8,chaise:{w:0.9,d:1.3},modules:[{w:0.9,d:1.0},{w:0.9,d:1.3}],arm:{w:0.15,d:0.8,h:0.6},label:"180 · 90×100 + 90×130"},
+    rack:{z:2.45,d:0.34,l:1.6,h:0.5,y0:0,label:"160 × 34"},
+    tvz:3.25,
+    ratona:{type:"box",x:0.05,z:1.89,w:0.7,d:0.45,label:"45 × 70"},
+    mesa:{type:"oval",name:"Mesa Oliva",x:1.0,z:0.9,w:0.8,d:1.2,label:"120 × 80 oval"},
+    sillas:[[0.72,1.5],[2.08,1.5]],
+    desk:{pos:[0,5.95],rot:Math.PI/2},
+    printer:{x:2.4,z:4.6,w:0.4,d:1.3,h:0.8,front:-1,label:"130 × 40"},
+    changed:{},
+  },
 };
 
 // ---------- variante de sillón (opciones 1 y 3) ----------
@@ -166,6 +178,28 @@ const OPTIONS_CAM = {
       ["Rack TV", "160 × 34"], ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
     ],
   },
+};
+OPTIONS.C = {
+  title: "Escritorio al ventanal", badge: "Opción 4",
+  desc: "Como la opción 1, pero el escritorio pasa al rincón del ventanal y trabajás mirando hacia el balcón. El living se corre 15 cm hacia la cocina para dejar lugar a la silla.",
+  metrics: [
+    ["Paso al balcón", "1,20 m"],
+    ["Silla escritorio a sillón", "0,63 m"],
+    ["Paso frente al sillón", "1,46 m"],
+    ["Ratona a silla comedor", "0,17 m", "justo", "tight"],
+  ],
+  note: ["good", "Mirando a la ventana no hay reflejos en los monitores. Para el contraluz de la tarde conviene una cortina liviana o un blackout."],
+  listTitle: "Muebles (cm)",
+  list: OPTIONS.A.list,
+};
+OPTIONS_CAM.C = {
+  metrics: [
+    ["Paso al balcón", "1,20 m"],
+    ["Silla escritorio a sillón", "0,63 m"],
+    ["Paso frente al camastro", "1,06 m"],
+    ["Ratona a silla comedor", "0,17 m", "justo", "tight"],
+  ],
+  list: OPTIONS_CAM.A.list,
 };
 function getOption(key){
   const v = sofaVariant === "cam" && OPTIONS_CAM[key];
@@ -317,7 +351,9 @@ function planSVG(key){
   g += t.type === "round" ? `<circle cx="${t.z}" cy="${t.x}" r="${t.r}" class="pf soft"/>` : R(t.x, t.z, t.x+t.w, t.z+t.d, "pf soft");
   const r = L.rack; g += R(2.8-r.d, r.z, 2.8, r.z+r.l, "pf soft");
   const d = L.desk;
-  g += d.rot ? R(d.pos[0]-0.6, d.pos[1]-1.2, d.pos[0], d.pos[1], "pf desk") : R(d.pos[0], d.pos[1], d.pos[0]+0.6, d.pos[1]+1.2, "pf desk");
+  if(!d.rot) g += R(d.pos[0], d.pos[1], d.pos[0]+0.6, d.pos[1]+1.2, "pf desk");
+  else if(Math.abs(d.rot - Math.PI) < 1e-3) g += R(d.pos[0]-0.6, d.pos[1]-1.2, d.pos[0], d.pos[1], "pf desk");
+  else g += R(d.pos[0], d.pos[1]-0.6, d.pos[0]+1.2, d.pos[1], "pf desk"); // girado 90°: mira al ventanal
   const p = L.printer; g += R(p.x, p.z, p.x+p.w, p.z+p.d, "pf soft");
   return `<svg viewBox="-0.12 -0.12 6.24 3.04" role="presentation">
     <rect x="0" y="0" width="6" height="2.8" class="room"/>
@@ -352,6 +388,7 @@ document.querySelectorAll(".opt[data-l]").forEach(b => {
   b.addEventListener("click", () => {
     currentKey = b.dataset.l;
     pressGroup(".opt", b);
+    revealOpt(b, true);
     renderDetail(currentKey);
     syncSofaSwitch();
     saveState();
@@ -380,6 +417,14 @@ document.querySelectorAll("[data-sofa]").forEach(b => {
 }
 const start = currentKey;
 pressGroup(".opt", document.querySelector(`.opt[data-l="${start}"]`));
+// en el celular las tarjetas se deslizan: mostrar siempre la elegida
+function revealOpt(btn, smooth){
+  const row = btn.parentElement;
+  if(row.scrollWidth <= row.clientWidth) return;
+  const left = btn.offsetLeft - (row.clientWidth - btn.offsetWidth) / 2;
+  row.scrollTo({left: Math.max(0, left), behavior: smooth ? "smooth" : "auto"});
+}
+requestAnimationFrame(() => revealOpt(document.querySelector(`.opt[data-l="${start}"]`), false));
 renderDetail(start);
 syncSofaSwitch();
 refreshPlans();
@@ -674,7 +719,10 @@ const VIEWS = {
   balcon:     {p:[1.5,1.6,6.9],   t:[1.4,0.9,0.8]},
   escritorio: {p:[1.9,1.55,4.2],  t:[0.1,1.0,5.6]},
 };
-const VIEW_OVERRIDES = { B: { escritorio: {p:[0.55,1.6,4.7], t:[2.6,1.0,2.8]} } };
+const VIEW_OVERRIDES = {
+  B: { escritorio: {p:[0.55,1.6,4.7], t:[2.6,1.0,2.8]} },
+  C: { escritorio: {p:[0.75,1.55,4.15], t:[0.6,1.0,6.4]} },
+};
 const ISO_PORTRAIT = {p:[5.0,9.6,12.6], t:[1.9,0,2.0]};
 let currentView = "iso", currentLayout = start;
 

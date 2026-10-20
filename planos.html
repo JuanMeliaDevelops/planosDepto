@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=12">
+<link rel="stylesheet" href="assets/style.css?v=13">
 </head>
 <body>
 <main class="wrap">
@@ -53,6 +53,7 @@
       <button class="tab" role="tab" id="tab-a" aria-controls="panel-a" aria-selected="true">1 · Tus muebles</button>
       <button class="tab" role="tab" id="tab-a2" aria-controls="panel-a2" aria-selected="false" tabindex="-1">2 · Más amplia</button>
       <button class="tab" role="tab" id="tab-b" aria-controls="panel-b" aria-selected="false" tabindex="-1">3 · Living al ventanal</button>
+      <button class="tab" role="tab" id="tab-c" aria-controls="panel-c" aria-selected="false" tabindex="-1">4 · Escritorio al ventanal</button>
     </div>
 
     <div class="plan" role="tabpanel" id="panel-a" aria-labelledby="tab-a">
@@ -114,6 +115,30 @@
         <li><span>Paso central (impresora–silla)</span><span class="num">~1,20 m</span></li>
         <li><span>Paso al balcón (frente al camastro)</span><span class="num">~1,06 m</span></li>
         <li><span>Frente a la mesada</span><span class="num">0,90 m</span></li>
+      </ul>
+    </div>
+    <div class="plan" role="tabpanel" id="panel-c" aria-labelledby="tab-c" hidden>
+      <div class="seg2 plan-variant" role="group" aria-label="Variante de sillón" data-panel="c">
+        <button data-pv="mod" aria-pressed="true"><strong>2 módulos</strong><small>90×100 + 90×130</small></button>
+        <button data-pv="cam" aria-pressed="false"><strong>180 × 100 + camastro</strong><small>camastro suelto 90×40</small></button>
+      </div>
+      <figure class="plan-figure">
+        <a href="planos/opcion-4.png" data-mod="planos/opcion-4.png" data-cam="planos/opcion-4-camastro.png" target="_blank" rel="noopener"><img src="planos/opcion-4.png" width="1146" height="1922" alt="Plano de la opción 4: escritorio en el rincón del ventanal mirando al balcón, living corrido hacia la cocina, comedor junto a la cocina" loading="lazy"></a>
+        <figcaption><span>Opción 4 · Escritorio al ventanal</span><span class="num">medidas en metros</span></figcaption>
+      </figure>
+      <ul class="facts" data-pv-list="mod">
+        <li class="good"><span>Escritorio mirando al balcón</span><span class="num">sin reflejos</span></li>
+        <li><span>Paso al balcón</span><span class="num">~1,20 m</span></li>
+        <li><span>Silla de escritorio a sillón</span><span class="num">~0,63 m</span></li>
+        <li><span>Paso frente al módulo de 130</span><span class="num">~1,16 m</span></li>
+        <li><span>Ratona a silla del comedor</span><span class="num">~0,17 m</span></li>
+      </ul>
+      <ul class="facts" data-pv-list="cam" hidden>
+        <li class="good"><span>Escritorio mirando al balcón</span><span class="num">sin reflejos</span></li>
+        <li><span>Paso al balcón</span><span class="num">~1,20 m</span></li>
+        <li><span>Silla de escritorio a sillón</span><span class="num">~0,63 m</span></li>
+        <li><span>Paso frente al camastro</span><span class="num">~1,06 m</span></li>
+        <li><span>Ratona a silla del comedor</span><span class="num">~0,17 m</span></li>
       </ul>
     </div>
   </section>
