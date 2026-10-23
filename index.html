@@ -104,7 +104,7 @@
     <div class="sheet-head" id="sheet-head">
       <span class="grab" aria-hidden="true"></span>
       <div class="sheet-bar">
-        <div class="sheet-title"><span class="dot" id="sheet-dot"></span><span class="sheet-name-wrap"><span class="sheet-kicker">Viendo</span><strong id="sheet-name">Tus muebles</strong></span></div>
+        <div class="sheet-title"><span class="dot" id="sheet-dot"></span><span class="sheet-name-wrap"><span class="sheet-kicker">Viendo</span><strong id="sheet-name">Tu dibujo</strong></span></div>
         <button class="icon-btn" id="sheet-toggle" aria-expanded="false" aria-controls="detail">Ver detalles</button>
         <button class="icon-btn round" id="sheet-hide" aria-label="Ocultar controles" title="Ocultar controles">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
@@ -117,7 +117,12 @@
     </div>
 
     <div class="opts" role="group" aria-label="Distribuciones">
-      <button class="opt" data-l="A" aria-pressed="true">
+      <button class="opt opt-wide" data-l="D" aria-pressed="true">
+        <span class="opt-plan" data-plan="D" aria-hidden="true"></span>
+        <span class="opt-text"><span class="t"><span class="opt-num">5</span>Tu dibujo</span><span class="s">Mesa 1×1 junto a la cocina, escritorio en el rincón del ventanal</span></span>
+        <span class="opt-check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="opt" data-l="A" aria-pressed="false">
         <span class="opt-plan" data-plan="A" aria-hidden="true"></span>
         <span class="opt-text"><span class="t"><span class="opt-num">1</span>Tus muebles</span><span class="s">Living al centro</span></span>
         <span class="opt-check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -148,7 +153,7 @@
       </div>
     </div>
 
-    <div class="detail" id="detail" data-l="A" aria-live="polite"></div>
+    <div class="detail" id="detail" data-l="D" aria-live="polite"></div>
 
     <div class="views-wrap">
       <p class="mini-label">Mirar desde</p>
@@ -171,7 +176,7 @@
   "three/addons/":"./vendor/three/addons/"
 }}
 </script>
-<script type="module" src="assets/living3d.js?v=15"></script>
+<script type="module" src="assets/living3d.js?v=16"></script>
 <noscript><p class="fallback">Este modelo necesita JavaScript. <a href="planos.html">Ver los planos</a></p></noscript>
 </body>
 </html>

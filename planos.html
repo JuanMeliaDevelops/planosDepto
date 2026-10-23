@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=15">
+<link rel="stylesheet" href="assets/style.css?v=16">
 </head>
 <body>
 <main class="wrap">
@@ -50,13 +50,28 @@
     </div>
 
     <div class="tabs" role="tablist" aria-label="Opciones de distribución">
-      <button class="tab" role="tab" id="tab-a" aria-controls="panel-a" aria-selected="true">1 · Tus muebles</button>
+      <button class="tab" role="tab" id="tab-d" aria-controls="panel-d" aria-selected="true">5 · Tu dibujo</button>
+      <button class="tab" role="tab" id="tab-a" aria-controls="panel-a" aria-selected="false" tabindex="-1">1 · Tus muebles</button>
       <button class="tab" role="tab" id="tab-a2" aria-controls="panel-a2" aria-selected="false" tabindex="-1">2 · Más amplia</button>
       <button class="tab" role="tab" id="tab-b" aria-controls="panel-b" aria-selected="false" tabindex="-1">3 · Living al ventanal</button>
       <button class="tab" role="tab" id="tab-c" aria-controls="panel-c" aria-selected="false" tabindex="-1">4 · Escritorio al ventanal</button>
     </div>
 
-    <div class="plan" role="tabpanel" id="panel-a" aria-labelledby="tab-a">
+    <div class="plan" role="tabpanel" id="panel-d" aria-labelledby="tab-d">
+      <figure class="plan-figure">
+        <a href="planos/opcion-5.png" target="_blank" rel="noopener"><img src="planos/opcion-5.png" width="1146" height="1922" alt="Plano de la opción 5: mesa cuadrada de 1 × 1 junto a la cocina, sillón de 190 × 100 contra la medianera frente al rack, escritorio en el rincón del ventanal contra el tabique e impresora entre el sillón y el ventanal" loading="lazy"></a>
+        <figcaption><span>Opción 5 · Tu dibujo</span><span class="num">medidas en metros</span></figcaption>
+      </figure>
+      <ul class="facts">
+        <li><span>Paso frente al sillón</span><span class="num">~1,46 m</span></li>
+        <li><span>Paso al balcón</span><span class="num">~1,20 m</span></li>
+        <li class="good"><span>Paso cocina–pasillo</span><span class="num">~1,65 m</span></li>
+        <li><span>Silla del comedor a sillón</span><span class="num">~0,25 m</span></li>
+        <li><span>Mesa ratona</span><span class="num">sin ubicar</span></li>
+      </ul>
+    </div>
+
+    <div class="plan" role="tabpanel" id="panel-a" aria-labelledby="tab-a" hidden>
       <div class="seg2 plan-variant" role="group" aria-label="Variante de sillón" data-panel="a">
         <button data-pv="mod" aria-pressed="true"><strong>2 módulos</strong><small>90×100 + 90×130</small></button>
         <button data-pv="cam" aria-pressed="false"><strong>2 módulos + camastro</strong><small>180×100 + 90×40</small></button>

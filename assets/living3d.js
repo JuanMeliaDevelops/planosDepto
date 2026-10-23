@@ -126,6 +126,19 @@ const LAYOUTS = {
     printer:{x:0,z:2.1,w:0.4,d:1.3,h:0.8,front:1,label:"130 × 40"},
     changed:{},
   },
+  D:{
+    // la distribución que dibujó Juani: mesa 1×1 junto a la cocina, sillón 190×100 contra la medianera,
+    // escritorio en el rincón del ventanal contra el tabique, mirando al balcón; impresora entre sillón y ventanal
+    sofa:{x:0,z:2.75,d:1.0,l:1.9,modules:[{w:1.9,d:1.0}],arm:{w:0.15,d:0.8,h:0.6},fixed:true,label:"190 × 100"},
+    rack:{z:2.85,d:0.34,l:1.6,h:0.5,y0:0,label:"160 × 34"},
+    tvz:3.65,
+    ratona:null,
+    mesa:{type:"box",name:"Mesa",x:0.15,z:1.0,w:1.0,d:1.0,label:"100 × 100"},
+    sillas:[[0.65,0.72],[0.65,2.28]], sillasMiran:"centro",
+    desk:{pos:[1.6,5.95],rot:Math.PI/2},
+    printer:{x:0,z:4.65,w:0.4,d:1.3,h:0.8,front:1,label:"130 × 40"},
+    changed:{},
+  },
   C:{
     // escritorio en el rincón del ventanal, mirando hacia afuera; living corrido 15 cm hacia la cocina
     sofa:{x:0,z:2.35,d:1.0,l:1.8,chaise:{w:0.9,d:1.3},modules:[{w:0.9,d:1.0},{w:0.9,d:1.3}],arm:{w:0.15,d:0.8,h:0.6},label:"180 · 90×100 + 90×130"},
@@ -152,7 +165,7 @@ let sofaVariant = "mod";
 function getLayout(key){
   const L = LAYOUTS[key];
   const v = SOFAS[sofaVariant];
-  if(v && L.sofa.modules) return {...L, sofa:{...v, x:L.sofa.x, z:L.sofa.z}};
+  if(v && L.sofa.modules && !L.sofa.fixed) return {...L, sofa:{...v, x:L.sofa.x, z:L.sofa.z}};
   return L;
 }
 const OPTIONS_CAM = {
@@ -183,6 +196,22 @@ const OPTIONS_CAM = {
       ["Rack TV", "160 × 34"], ["Mesa ratona", "45 × 70"], ["Mueble impresora", "130 × 40"], ["Escritorio", "120 × 60"],
     ],
   },
+};
+OPTIONS.D = {
+  title: "Tu dibujo", badge: "Opción 5",
+  desc: "La distribución que dibujaste: mesa cuadrada de 1 × 1 con una silla en cada punta junto a la cocina, sillón de 190 × 100 contra la medianera frente al rack, y el escritorio en el rincón del ventanal, contra el tabique, mirando al balcón. La impresora va contra la medianera, entre el sillón y el ventanal.",
+  metrics: [
+    ["Paso frente al sillón", "1,46 m"],
+    ["Paso al balcón", "1,20 m"],
+    ["Paso cocina–pasillo", "1,65 m"],
+    ["Silla comedor a sillón", "0,25 m", "justo", "tight"],
+  ],
+  note: ["warn", "La silla de la punta de la cocina queda frente a la entrada, y no dibujaste ratona: al costado del sillón no entra sin chocar la silla del comedor."],
+  listTitle: "Muebles (cm)",
+  list: [
+    ["Sillón", "190 × 100"], ["Mesa", "100 × 100"], ["Sillas", "2"], ["Rack TV", "160 × 34"],
+    ["Escritorio", "120 × 60"], ["Mueble impresora", "130 × 40"], ["Mesa ratona", "sin ubicar"],
+  ],
 };
 OPTIONS.C = {
   title: "Escritorio al ventanal", badge: "Opción 4",
@@ -391,9 +420,10 @@ function planSVG(key){
   if(s.chaise) g += R(s.x+s.d-0.05, s.z+s.l-s.chaise.w, s.chaise.d, s.z+s.l, "pf main");
   const m = L.mesa;
   if(m.type === "round") g += `<circle cx="${m.z}" cy="${m.x}" r="${m.r}" class="pf"/>`;
+  else if(m.type === "box") g += R(m.x, m.z, m.x+m.w, m.z+m.d, "pf");
   else g += `<ellipse cx="${m.z+m.d/2}" cy="${m.x+m.w/2}" rx="${m.d/2}" ry="${m.w/2}" class="pf"/>`;
   const t = L.ratona;
-  g += t.type === "round" ? `<circle cx="${t.z}" cy="${t.x}" r="${t.r}" class="pf soft"/>` : R(t.x, t.z, t.x+t.w, t.z+t.d, "pf soft");
+  if(t) g += t.type === "round" ? `<circle cx="${t.z}" cy="${t.x}" r="${t.r}" class="pf soft"/>` : R(t.x, t.z, t.x+t.w, t.z+t.d, "pf soft");
   const r = L.rack; g += R(2.8-r.d, r.z, 2.8, r.z+r.l, "pf soft");
   const d = L.desk;
   if(!d.rot) g += R(d.pos[0], d.pos[1], d.pos[0]+0.6, d.pos[1]+1.2, "pf desk");
@@ -416,17 +446,17 @@ function toast(msg){
 
 // ---------- selección de distribución y de sillón (funciona aunque no haya 3D) ----------
 let onLayout = () => {}, onSofa = () => {};
-let currentKey = "A";
+let currentKey = "D";
 function pressGroup(sel, btn){ document.querySelectorAll(sel).forEach(b => b.setAttribute("aria-pressed", String(b === btn))); }
 const sofaSwitch = document.getElementById("sofa-switch");
 function saveState(){
-  const h = currentKey + (sofaVariant !== "mod" && LAYOUTS[currentKey].sofa.modules ? "-" + sofaVariant : "");
+  const h = currentKey + (sofaVariant !== "mod" && LAYOUTS[currentKey].sofa.modules && !LAYOUTS[currentKey].sofa.fixed ? "-" + sofaVariant : "");
   try{ localStorage.setItem("living-layout", currentKey); localStorage.setItem("living-sofa", sofaVariant); }catch(e){}
   try{ history.replaceState(null, "", "#" + h); }catch(e){}
 }
 function refreshPlans(){ document.querySelectorAll(".opt-plan").forEach(el => { el.innerHTML = planSVG(el.dataset.plan); }); }
 function syncSofaSwitch(){
-  sofaSwitch.hidden = !LAYOUTS[currentKey].sofa.modules;
+  sofaSwitch.hidden = !LAYOUTS[currentKey].sofa.modules || !!LAYOUTS[currentKey].sofa.fixed;
   pressGroup("[data-sofa]", document.querySelector(`[data-sofa="${sofaVariant}"]`));
 }
 document.querySelectorAll(".opt[data-l]").forEach(b => {
@@ -718,7 +748,8 @@ function buildFurniture(key){
   tag(r.y0 > 0 ? "Rack flotante" : "Rack TV", r.label, 2.8-r.d/2, r.y0+r.h+0.12, r.z+r.l/2, furn, cls("rack"));
 
   const t = L.ratona;
-  if(t.type === "box"){
+  if(!t){ /* sin ratona */ }
+  else if(t.type === "box"){
     furn.add(box(t.x,0.36,t.z,t.x+t.w,0.4,t.z+t.d,C.woodLight));
     for(const [lx,lz] of [[t.x+0.03,t.z+0.03],[t.x+t.w-0.03,t.z+0.03],[t.x+0.03,t.z+t.d-0.03],[t.x+t.w-0.03,t.z+t.d-0.03]]) furn.add(box(lx-0.015,0,lz-0.015,lx+0.015,0.36,lz+0.015,C.black));
     tag("Ratona", t.label, t.x+t.w/2, 0.55, t.z+t.d/2, furn, cls("ratona"));
@@ -743,7 +774,7 @@ function buildFurniture(key){
     mcx = m.x; mcz = m.z;
   }
   tag(m.name, m.label, mcx, 0.95, mcz, furn, cls("mesa"));
-  for(const [cx,cz] of L.sillas) chair(cx, cz, mcx, m.type === "round" ? mcz : cz, furn);
+  for(const [cx,cz] of L.sillas) chair(cx, cz, mcx, (m.type === "round" || L.sillasMiran === "centro") ? mcz : cz, furn);
 
   buildDesk(L.desk, furn);
 
@@ -767,6 +798,7 @@ const VIEWS = {
 const VIEW_OVERRIDES = {
   B: { escritorio: {p:[0.55,1.6,4.7], t:[2.6,1.0,2.8]} },
   C: { escritorio: {p:[0.75,1.55,4.15], t:[0.6,1.0,6.4]} },
+  D: { escritorio: {p:[2.15,1.55,4.15], t:[2.2,1.0,6.4]} },
 };
 const ISO_PORTRAIT = {p:[5.0,9.6,12.6], t:[1.9,0,2.0]};
 let currentView = "iso", currentLayout = start;

@@ -118,6 +118,26 @@ LAYOUTS = {
     },
 }
 
+LAYOUTS["D"] = {
+    "titulo": "OPCIÓN 5 — Tu dibujo: mesa 1×1 junto a la cocina · sillón 190 × 100 · escritorio en el rincón del ventanal",
+    "muebles": [
+        ("Mesa", 0.15, 1.00, 1.00, 1.00, "100 × 100"),
+        ("Sillón", 0.00, 2.75, 1.00, 1.90, "190 × 100"),
+        ("Rack TV", 2.46, 2.85, 0.34, 1.60, "160 × 34"),
+        ("Escritorio", 1.60, 5.35, 1.20, 0.60, "120 × 60"),
+        ("Mueble impresora 3D", 0.00, 4.65, 0.40, 1.30, "130 × 40"),
+    ],
+    "brazos": [(0.00, 2.75, 0.80, 2.90), (0.00, 4.50, 0.80, 4.65)],
+    "sillas": [(0.65, 0.72), (0.65, 2.28), (2.20, 5.00)],
+    "tv": (2.80, 3.65, "v"),
+    "notas": [
+        "• Paso frente al sillón: ~1,46 m",
+        "• Paso al balcón entre impresora y escritorio: ~1,20 m",
+        "• Paso cocina ↔ pasillo junto a la mesa: ~1,65 m",
+        "• Silla del comedor a sillón: ~0,25 m (justo) · sin ratona",
+    ],
+}
+
 LAYOUTS["C"] = {
     "titulo": "OPCIÓN 4 — Escritorio en el rincón del ventanal, mirando al balcón · Living corrido hacia la cocina",
     "muebles": [
@@ -279,7 +299,7 @@ def make_dxf(path):
     doc = ezdxf.new("R2010", setup=True)
     doc.units = ezdxf.units.M
     msp = doc.modelspace()
-    for name, color in [("MUROS", 7), ("COCINA", 8), ("MUEBLES_A", 5), ("MUEBLES_B", 3), ("MUEBLES_A2", 1), ("MUEBLES_C", 6), ("TEXTOS", 2)]:
+    for name, color in [("MUROS", 7), ("COCINA", 8), ("MUEBLES_A", 5), ("MUEBLES_B", 3), ("MUEBLES_A2", 1), ("MUEBLES_C", 6), ("MUEBLES_D", 4), ("TEXTOS", 2)]:
         doc.layers.add(name, color=color)
 
     def rect(x0, y0, x1, y1, layer, dx=0):
@@ -287,7 +307,7 @@ def make_dxf(path):
         pts = [(x0 + dx, -y0), (x1 + dx, -y0), (x1 + dx, -y1), (x0 + dx, -y1)]
         msp.add_lwpolyline(pts, close=True, dxfattribs={"layer": layer})
 
-    for i, key in enumerate(["A", "A2", "B", "C"]):
+    for i, key in enumerate(["A", "A2", "B", "C", "D"]):
         dx = i * 8.0
         for w in WALLS:
             rect(*w, "MUROS", dx)
