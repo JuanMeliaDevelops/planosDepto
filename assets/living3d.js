@@ -132,11 +132,11 @@ const LAYOUTS = {
     sofa:{x:0,z:2.75,d:1.0,l:1.9,modules:[{w:1.9,d:1.0}],arm:{w:0.15,d:0.8,h:0.6},fixed:true,label:"190 × 100"},
     rack:{z:2.85,d:0.34,l:1.6,h:0.5,y0:0,label:"160 × 34"},
     tvz:3.65,
-    ratona:null,
+    ratona:{type:"box",x:0.05,z:4.70,w:0.7,d:0.45,label:"45 × 70"},
     mesa:{type:"box",name:"Mesa",x:0.15,z:1.0,w:1.0,d:1.0,label:"100 × 100"},
     sillas:[[0.65,0.72],[0.65,2.28]], sillasMiran:"centro",
     desk:{pos:[1.6,5.95],rot:Math.PI/2},
-    printer:{x:0,z:4.65,w:0.4,d:1.3,h:0.8,front:1,label:"130 × 40"},
+    printer:null,
     changed:{},
   },
   C:{
@@ -199,18 +199,18 @@ const OPTIONS_CAM = {
 };
 OPTIONS.D = {
   title: "Tu dibujo", badge: "Opción 5",
-  desc: "La distribución que dibujaste: mesa cuadrada de 1 × 1 con una silla en cada punta junto a la cocina, sillón de 190 × 100 contra la medianera frente al rack, y el escritorio en el rincón del ventanal, contra el tabique, mirando al balcón. La impresora va contra la medianera, entre el sillón y el ventanal.",
+  desc: "La distribución que dibujaste: mesa cuadrada de 1 × 1 con una silla en cada punta junto a la cocina, sillón de 190 × 100 contra la medianera frente al rack, la ratona al costado del sillón del lado del ventanal y el escritorio en el rincón del ventanal, contra el tabique, mirando al balcón.",
   metrics: [
     ["Paso frente al sillón", "1,46 m"],
-    ["Paso al balcón", "1,20 m"],
+    ["Paso al balcón", "0,85 m"],
     ["Paso cocina–pasillo", "1,65 m"],
     ["Silla comedor a sillón", "0,25 m", "justo", "tight"],
   ],
-  note: ["warn", "La silla de la punta de la cocina queda frente a la entrada, y no dibujaste ratona: al costado del sillón no entra sin chocar la silla del comedor."],
+  note: ["warn", "La silla de la punta de la cocina queda frente a la entrada. Al balcón se pasa entre la ratona y el escritorio (85 cm)."],
   listTitle: "Muebles (cm)",
   list: [
     ["Sillón", "190 × 100"], ["Mesa", "100 × 100"], ["Sillas", "2"], ["Rack TV", "160 × 34"],
-    ["Escritorio", "120 × 60"], ["Mueble impresora", "130 × 40"], ["Mesa ratona", "sin ubicar"],
+    ["Escritorio", "120 × 60"], ["Mesa ratona", "45 × 70, al costado del sillón"],
   ],
 };
 OPTIONS.C = {
@@ -429,7 +429,7 @@ function planSVG(key){
   if(!d.rot) g += R(d.pos[0], d.pos[1], d.pos[0]+0.6, d.pos[1]+1.2, "pf desk");
   else if(Math.abs(d.rot - Math.PI) < 1e-3) g += R(d.pos[0]-0.6, d.pos[1]-1.2, d.pos[0], d.pos[1], "pf desk");
   else g += R(d.pos[0], d.pos[1]-0.6, d.pos[0]+1.2, d.pos[1], "pf desk"); // girado 90°: mira al ventanal
-  const p = L.printer; g += R(p.x, p.z, p.x+p.w, p.z+p.d, "pf soft");
+  const p = L.printer; if(p) g += R(p.x, p.z, p.x+p.w, p.z+p.d, "pf soft");
   return `<svg viewBox="-0.12 -0.12 6.24 3.04" role="presentation">
     <rect x="0" y="0" width="6" height="2.8" class="room"/>
     <line x1="6" y1="0.1" x2="6" y2="2.7" class="win"/>
@@ -778,7 +778,9 @@ function buildFurniture(key){
 
   buildDesk(L.desk, furn);
 
-  const p = L.printer, pc = p.z+p.d/2;
+  const p = L.printer;
+  if(!p) return;
+  const pc = p.z+p.d/2;
   furn.add(box(p.x,0,p.z,p.x+p.w,p.h,p.z+p.d,C.wood));
   furn.add(box(p.x+0.02,p.h,pc-0.2,p.x+p.w-0.02,p.h+0.42,pc+0.2,C.printer));
   const gx = p.front < 0 ? p.x+0.02 : p.x+p.w-0.031;
@@ -927,5 +929,6 @@ renderer.setAnimationLoop(now => {
 window.__living = {
   goView, render: () => { needs = true; },
   look: (p, t) => { camera.position.set(...p); controls.target.set(...t); controls.update(); needs = true; },
+  scene, labels: on => labelsEl.classList.toggle("hide-tags", !on),
 };
 }

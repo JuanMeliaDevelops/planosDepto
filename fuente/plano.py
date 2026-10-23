@@ -125,16 +125,16 @@ LAYOUTS["D"] = {
         ("Sillón", 0.00, 2.75, 1.00, 1.90, "190 × 100"),
         ("Rack TV", 2.46, 2.85, 0.34, 1.60, "160 × 34"),
         ("Escritorio", 1.60, 5.35, 1.20, 0.60, "120 × 60"),
-        ("Mueble impresora 3D", 0.00, 4.65, 0.40, 1.30, "130 × 40"),
+        ("Ratona", 0.05, 4.70, 0.70, 0.45, "45 × 70"),
     ],
     "brazos": [(0.00, 2.75, 0.80, 2.90), (0.00, 4.50, 0.80, 4.65)],
     "sillas": [(0.65, 0.72), (0.65, 2.28), (2.20, 5.00)],
     "tv": (2.80, 3.65, "v"),
     "notas": [
         "• Paso frente al sillón: ~1,46 m",
-        "• Paso al balcón entre impresora y escritorio: ~1,20 m",
+        "• Paso al balcón entre ratona y escritorio: ~0,85 m",
         "• Paso cocina ↔ pasillo junto a la mesa: ~1,65 m",
-        "• Silla del comedor a sillón: ~0,25 m (justo) · sin ratona",
+        "• Silla del comedor a sillón: ~0,25 m (justo) · sin mueble de impresora",
     ],
 }
 
