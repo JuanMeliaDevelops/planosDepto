@@ -377,6 +377,11 @@ mobileMQ.addEventListener?.("change", () => setSheet("peek"));
 const RENDERS = [
   {src:"renders/render-1.jpg", title:"Sillón recto", alt:"Render del depto con sillón recto verde, mesa redonda y sillas amarillas"},
   {src:"renders/render-2.jpg", title:"Sillón con chaise", alt:"Render del depto con sillón gris con chaise, mesa auxiliar y sillas tapizadas"},
+  {src:"renders/tu-dibujo-iso.jpg", title:"Tu dibujo · Arriba", alt:"Vista del modelo 3D de tu dibujo: arriba"},
+  {src:"renders/tu-dibujo-entrada.jpg", title:"Tu dibujo · Desde la entrada", alt:"Vista del modelo 3D de tu dibujo: desde la entrada"},
+  {src:"renders/tu-dibujo-balcon.jpg", title:"Tu dibujo · Desde el balcón", alt:"Vista del modelo 3D de tu dibujo: desde el balcón"},
+  {src:"renders/tu-dibujo-cocina.jpg", title:"Tu dibujo · Desde la cocina", alt:"Vista del modelo 3D de tu dibujo: desde la cocina"},
+  {src:"renders/tu-dibujo-escritorio.jpg", title:"Tu dibujo · El escritorio", alt:"Vista del modelo 3D de tu dibujo: el escritorio"},
 ];
 const lb = document.getElementById("lightbox"), lbImg = document.getElementById("lb-img");
 let lbIndex = 0, lbOpener = null;

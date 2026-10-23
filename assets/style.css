@@ -374,3 +374,11 @@ details.more .more-body{display:flex;flex-direction:column;gap:10px;padding-top:
   .opt-wide{grid-column:1/-1;flex-direction:row;align-items:center}
   .opt-wide .opt-plan{flex:0 0 46%}
 }
+
+/* tira de vistas del modelo */
+.render-strip{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:0 0 6px;scroll-snap-type:x proximity;flex-shrink:0;min-height:max-content}
+.render-strip::-webkit-scrollbar{display:none}
+.render-strip .render-thumb{flex:0 0 116px;scroll-snap-align:start}
+.render-strip .render-thumb span{line-height:1.35;white-space:nowrap;padding-bottom:1px}
+.render-strip .render-thumb img{aspect-ratio:3/2}
+.files{overflow-x:hidden}
